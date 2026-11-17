@@ -22,3 +22,10 @@ orizzontale da 375px in su.
 - `data-intro` per l'ingresso della testata, `data-reveal` / `data-reveal-group` per la comparsa allo scroll (`src/scripts/motion.ts`).
 - Al massimo uno o due elementi animati per vista. Lo stato nascosto esiste solo con la classe `.js-motion`, quindi senza JS o con reduced-motion tutto resta visibile.
 - Transizioni tra pagine con il `ClientRouter` di Astro: gli script di pagina si agganciano a `astro:page-load`.
+
+## Componenti e librerie (v3)
+
+- **DecryptText** (Motiq) sul titolo della home, sul terminale della home e sulla pagina 404. Il titolo si decifra una volta all'apertura e di nuovo al passaggio del mouse; il terminale ripete l'animazione ogni 6,5 s solo quando è visibile. Con reduced-motion o senza JS mostra subito il testo.
+- I token `--motiq-*` puntano ai nostri (`--color-primary`, `--color-foreground`…); nel terminale sono ridefiniti sui colori del codice, che restano scuri in entrambi i temi.
+- **motion** sostituisce le animazioni fatte a mano: comparsa allo scroll con molla senza rimbalzo e stagger di 70 ms, barra di lettura con `scroll()`, anello dei progressi con `motion/react`.
+- Costo: la home passa da circa 10 KB a circa 140 KB di JavaScript compresso, per via di React e motion. Le altre pagine caricano React solo se contengono un'isola.

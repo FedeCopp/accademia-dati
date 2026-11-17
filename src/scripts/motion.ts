@@ -1,72 +1,65 @@
 /**
- * Animazioni leggere, solo JS nativo.
- * - [data-reveal]: compare allo scroll (fade + salita). [data-reveal-group] assegna lo stagger ai figli.
- * - [data-intro]: ingresso in sequenza al caricamento (solo CSS, attivato da .js-motion).
- * - [data-reading-bar]: barra di lettura della pagina.
+ * Animazioni del sito con la libreria `motion` (API vanilla).
+ * - [data-reveal]: compare quando entra nel viewport (molla leggera).
+ * - [data-reveal-group]: i figli compaiono in sequenza con stagger.
+ * - [data-intro]: ingresso della testata al caricamento (CSS, attivato da .js-motion).
+ * - [data-reading-bar]: barra di lettura legata allo scorrimento.
  * - [data-toc] + sezioni [data-step]: indice che evidenzia la sezione in lettura.
- * Con prefers-reduced-motion non si nasconde nulla.
+ * Lo stato nascosto esiste solo con .js-motion (aggiunta in Base.astro); con reduced-motion
+ * o senza JS tutto resta visibile.
  */
+import { animate, inView, scroll, stagger } from 'motion';
+
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-let observer: IntersectionObserver | undefined;
-let cleanups: Array<() => void> = [];
+const spring = { type: 'spring', bounce: 0, duration: 0.7 } as const;
+const MARGIN = '0px 0px -8% 0px';
+let cleanups: VoidFunction[] = [];
+
+function show(els: Element[], withStagger: boolean) {
+  els.forEach((el) => el.classList.add('is-visible'));
+  animate(els, { opacity: [0, 1], y: [14, 0] }, { ...spring, delay: withStagger ? stagger(0.07) : 0 });
+}
 
 function setupReveal() {
-  observer?.disconnect();
+  const root = document.documentElement;
   if (reduce.matches || !('IntersectionObserver' in window)) {
-    document.documentElement.classList.remove('js-motion');
+    root.classList.remove('js-motion');
     return;
   }
-  document.documentElement.classList.add('js-motion');
-  document.querySelectorAll<HTMLElement>('[data-reveal-group]').forEach((g) => {
-    [...g.children].forEach((c, i) => {
-      const el = c as HTMLElement;
-      if (!el.hasAttribute('data-reveal')) el.setAttribute('data-reveal', '');
-      el.style.setProperty('--i', String(Math.min(i, 8)));
-    });
+  root.classList.add('js-motion');
+
+  document.querySelectorAll<HTMLElement>('[data-reveal-group]').forEach((group) => {
+    const items = [...group.children].filter((c) => !c.classList.contains('is-visible'));
+    items.forEach((c) => c.setAttribute('data-reveal', ''));
+    cleanups.push(inView(group, () => show(items, true), { margin: MARGIN, amount: 0.05 }));
   });
-  observer = new IntersectionObserver(
-    (entries) => entries.forEach((e) => {
-      if (e.isIntersecting) { e.target.classList.add('is-visible'); observer?.unobserve(e.target); }
-    }),
-    { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
-  );
-  document.querySelectorAll('[data-reveal]:not(.is-visible)').forEach((el) => {
-    // Ciò che è già nel viewport compare subito: niente buchi nel primo frame.
-    const r = el.getBoundingClientRect();
-    if (r.top < innerHeight * 0.92) el.classList.add('is-visible');
-    else observer!.observe(el);
+  document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-visible)').forEach((el) => {
+    if (el.parentElement?.hasAttribute('data-reveal-group')) return;
+    cleanups.push(inView(el, () => show([el], false), { margin: MARGIN, amount: 0.1 }));
   });
 }
 
 function setupReadingBar() {
   const bar = document.querySelector<HTMLElement>('[data-reading-bar]');
   if (!bar) return;
-  const onScroll = () => {
-    const max = document.documentElement.scrollHeight - innerHeight;
-    bar.style.transform = `scaleX(${max > 0 ? Math.min(1, scrollY / max) : 0})`;
-  };
-  addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-  cleanups.push(() => removeEventListener('scroll', onScroll));
+  cleanups.push(scroll((progress: number) => { bar.style.transform = `scaleX(${progress})`; }));
 }
 
 function setupToc() {
   const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc] a')];
-  if (!links.length || !('IntersectionObserver' in window)) return;
+  if (!links.length) return;
   const map = new Map(links.map((a) => [a.hash.slice(1), a]));
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (!e.isIntersecting) return;
+  document.querySelectorAll<HTMLElement>('[data-step]').forEach((section) => {
+    cleanups.push(inView(section, () => {
       links.forEach((a) => a.removeAttribute('aria-current'));
-      map.get(e.target.id)?.setAttribute('aria-current', 'step');
-    });
-  }, { rootMargin: '-30% 0px -60% 0px' });
-  document.querySelectorAll('[data-step]').forEach((s) => io.observe(s));
-  cleanups.push(() => io.disconnect());
+      map.get(section.id)?.setAttribute('aria-current', 'step');
+    }, { margin: '-30% 0px -60% 0px', amount: 0 }));
+  });
 }
 
 document.addEventListener('astro:page-load', () => {
-  cleanups.forEach((f) => f()); cleanups = [];
+  cleanups.forEach((f) => f());
+  cleanups = [];
   setupReveal();
   setupReadingBar();
   setupToc();

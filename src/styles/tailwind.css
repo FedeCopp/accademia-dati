@@ -1,0 +1,12 @@
+/*
+  Tailwind CSS v4 per i componenti React (cartella src/components/ui, stile shadcn).
+  Si importano solo tema e utility, SENZA preflight: il reset di base resta quello di global.css.
+  global.css non è in un layer, quindi i suoi token (--font-mono, --shadow-*, --radius-*)
+  hanno la precedenza su quelli di Tailwind e le utility li usano.
+*/
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@source "../components/ui";
+@source "../pages";

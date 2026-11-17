@@ -1,6 +1,6 @@
 # Accademia Dati
 
-Sito statico Astro 7 + MDX, pubblicato su GitHub Pages con `base: '/accademia-dati'`. Lingua dei contenuti: italiano.
+Sito statico Astro 7 + MDX con isole React 19, Tailwind CSS v4 e TypeScript, pubblicato su GitHub Pages con `base: '/accademia-dati'`. Lingua dei contenuti: italiano.
 
 ## Comandi
 - `npm run dev` · `npm run build` (Astro + Pagefind) · `npm run check` (astro check, deve restare a 0 errori)
@@ -11,6 +11,13 @@ Sito statico Astro 7 + MDX, pubblicato su GitHub Pages con `base: '/accademia-da
 - Nelle MDX non usare `{` o `<` nel testo fuori dai blocchi di codice.
 - Progressi: `src/scripts/progress.ts`, chiave localStorage `accademia-dati-weeks-v1`, attributi `data-week-toggle`, `data-week-state`, `data-progress-*`, `data-next-week`.
 - Icone: solo `src/components/Icon.astro` (SVG stile Lucide), mai emoji.
+
+## React, Tailwind e shadcn
+- Struttura shadcn: `components.json`, alias `@/*` → `src/*`, componenti React in `src/components/ui/` (es. `npx shadcn@latest add <componente>`), `cn()` in `src/lib/utils.ts`.
+- I componenti React si usano nelle pagine `.astro` come isole: `client:load` (sopra la piega) o `client:visible`.
+- Tailwind v4 (`src/styles/tailwind.css`) è caricato SENZA preflight: il reset e lo stile di base restano in `global.css`, che non è in un layer e quindi vince sulle utility in caso di conflitto. Attenzione ai nomi di classe che coincidono con utility Tailwind (es. `ring`, `container`, `border`).
+- `DecryptText` (`src/components/ui/decrypt-text.tsx`, Motiq, MIT): i token `--motiq-*` sono collegati alla palette in `global.css`.
+- Animazioni: libreria `motion` (`motion` per gli script vanilla in `src/scripts/motion.ts`, `motion/react` nelle isole, es. `progress-ring.tsx`). Sempre rispettare `prefers-reduced-motion`.
 
 ## Design
 - Per qualsiasi lavoro sull'interfaccia usa la skill `ui-ux-pro-max` (`.claude/skills/ui-ux-pro-max/`).

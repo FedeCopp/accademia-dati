@@ -33,6 +33,16 @@ npm run preview    # anteprima della build (qui funziona anche la ricerca)
 I campi obbligatori di ogni file sono definiti in `src/content.config.ts`: se ne manca uno, la build si ferma e indica quale.
 Ogni push su `main` ripubblica il sito in automatico con GitHub Actions.
 
+## Tecnologie
+
+Astro 7 con MDX, isole React 19, Tailwind CSS v4, TypeScript, [motion](https://motion.dev) per le animazioni e Pagefind per la ricerca. Il progetto segue la struttura di shadcn/ui: i componenti React stanno in `src/components/ui/` e se ne aggiungono altri con:
+
+```bash
+npx shadcn@latest add <nome-componente>
+```
+
+Il titolo e il terminale della home usano [Decrypt Text](https://motiq.dev/components/decrypt-text) di Motiq (licenza MIT).
+
 ## Design
 
 I token di design sono in `src/styles/global.css` e vengono da `design-system/accademia-dati/`, generato con la skill [UI UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) (licenza MIT), installata in `.claude/skills/ui-ux-pro-max/`. Le scelte che si discostano dal file generato sono in `design-system/accademia-dati/DECISIONS.md`.

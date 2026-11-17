@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import ProgressCard from '../components/ProgressCard.astro';
 import Roadmap from '../components/Roadmap.astro';
+import { DecryptText } from '@/components/ui/decrypt-text';
 import { url } from '../lib/url';
 
 const pipeline = [
@@ -24,7 +25,19 @@ const steps = [
     <div class="container hero-grid">
       <div class="hero-copy">
         <span class="eyebrow pill" data-intro style="--i:0">Data intelligence · da zero · 5–8 ore a settimana</span>
-        <h1 data-intro style="--i:1">Impara a trasformare i dati in <span class="hl">decisioni</span>.</h1>
+        <div class="title" data-intro style="--i:1">
+          <DecryptText
+            client:load
+            as="h1"
+            text="Impara a trasformare i dati in decisioni."
+            trigger="mount"
+            loop={false}
+            retriggerOnHover
+            stagger={30}
+            startDelay={250}
+            className="hero-title"
+          />
+        </div>
         <p class="lead" data-intro style="--i:2">Un percorso guidato di 14 mesi, una lezione alla settimana. Ogni fase si chiude con un progetto vero su GitHub, che dimostra cosa sai fare.</p>
         <div class="cta" data-intro style="--i:3">
           <a class="btn btn-primary btn-lg" href={url('/fase-1/settimana-01/')} data-cta-start>
@@ -40,13 +53,22 @@ const steps = [
       </div>
       <div class="hero-side" data-intro style="--i:3">
         <ProgressCard />
-        <div class="terminal" aria-label="Esempio di query SQL della settimana 7">
-          <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>settimana-07.sql</span></div>
-          <pre><code><span class="c">-- variazione mese su mese</span>
-<span class="k">SELECT</span> mese, totale,
-  totale - <span class="f">LAG</span>(totale)
-    <span class="k">OVER</span> (<span class="k">ORDER BY</span> mese) <span class="k">AS</span> delta
-<span class="k">FROM</span> mensile;<span class="cursor" aria-hidden="true"></span></code></pre>
+        <div class="terminal">
+          <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>settimana-05 · DuckDB</span></div>
+          <div class="term-body">
+            <DecryptText
+              client:visible
+              text={"duckdb -c \"SELECT regione, COUNT(*) FROM 'comuni.csv' GROUP BY 1\""}
+              variant="terminal"
+              trigger="inview"
+              startDelay={500}
+              stagger={28}
+              loop={6500}
+              retriggerOnHover={false}
+              className="term-line"
+            />
+            <p class="term-note">Interroga un CSV con SQL, senza installare un database. Lo impari alla settimana 5.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -131,10 +153,6 @@ const steps = [
   @media (min-width: 980px) { .hero-grid { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); } }
   .hero-copy { display: grid; gap: var(--space-lg); justify-items: start; }
   .pill { padding: 0.35rem 0.8rem; border-radius: 999px; background: var(--color-primary-soft); }
-  .hl { color: var(--color-primary); position: relative; white-space: nowrap; }
-  .hl::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0.06em; height: 0.12em; background: var(--color-accent-fill); opacity: .35; border-radius: 2px; transform-origin: left; }
-  .js-motion .hl::after { animation: grow 900ms var(--ease-out) 700ms both; }
-  @keyframes grow { from { transform: scaleX(0); } }
   .cta { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
   :global(.btn-lg) { min-height: 52px; padding: 0.8rem 1.5rem; font-size: 1rem; border-radius: 12px; }
   .btn-primary :global(svg) { transition: transform var(--dur-base) var(--ease-out); }
@@ -143,17 +161,26 @@ const steps = [
   .facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-sm) var(--space-lg); color: var(--color-muted-foreground); font-size: 0.92rem; }
   .facts li { display: inline-flex; align-items: center; gap: 6px; }
   .facts :global(svg) { color: var(--color-primary); }
+  .title { width: 100%; }
+  .title :global(.hero-title) { font-size: clamp(2.1rem, 5.4vw, 3.6rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; cursor: default; }
+  .term-body { padding: var(--space-sm) var(--space-sm) var(--space-lg); display: grid; gap: var(--space-xs); }
+  .term-note { padding-inline: 1rem; }
+  /* Il terminale resta scuro in entrambi i temi: i token Motiq vengono ridefiniti solo qui */
+  .terminal {
+    --motiq-surface: var(--code-bg); --motiq-fg: var(--code-fg); --motiq-muted: var(--code-str);
+    --motiq-border: transparent; --motiq-shadow-md: none; --motiq-success: var(--code-kw);
+    --motiq-secondary-accent: var(--code-kw); --motiq-accent: var(--code-kw); --motiq-accent-text: var(--code-fn);
+  }
+  .term-body :global(.term-line) { font-size: 0.86rem; }
+  /* Prompt, comando e cursore scorrono come testo normale invece che come elementi flex */
+  .term-body :global(.term-line > span:last-child) { display: block; }
+  .term-body :global(.term-line > span:last-child > span[aria-hidden]:first-child) { margin-right: 0.5ch; }
+  .term-note { font-size: 0.85rem; color: var(--code-str); }
   .hero-side { display: grid; gap: var(--space-md); min-width: 0; }
   .terminal { background: var(--code-bg); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); }
   .term-bar { display: flex; align-items: center; gap: 6px; padding: 0.6rem 0.9rem; border-bottom: 1px solid rgb(255 255 255 / .06); }
   .term-bar i { width: 10px; height: 10px; border-radius: 50%; background: rgb(255 255 255 / .16); }
   .term-bar span { margin-left: 8px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--code-str); }
-  .terminal pre { margin: 0; padding: var(--space-lg); color: var(--code-fg); font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.7; overflow-x: auto; }
-  .terminal code { background: none; padding: 0; }
-  .k { color: var(--code-kw); } .f { color: var(--code-fn); } .c { color: var(--code-str); }
-  .cursor { display: inline-block; width: 8px; height: 1.05em; margin-left: 4px; vertical-align: text-bottom; background: var(--code-kw); }
-  .js-motion .cursor { animation: blink 1.1s steps(1) infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
 
   .center { margin-inline: auto; text-align: center; justify-items: center; }
   .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-md); grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }

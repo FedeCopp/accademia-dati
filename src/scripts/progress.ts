@@ -67,6 +67,7 @@ function render() {
   });
   document.documentElement.dataset.phase1Done = String(count === TOTAL);
   document.documentElement.dataset.started = String(count > 0);
+  window.dispatchEvent(new CustomEvent('progress:change', { detail: { count } }));
 }
 
 function toast(msg: string, link?: { href: string; text: string }) {
