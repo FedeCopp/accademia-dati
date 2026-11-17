@@ -1,0 +1,26 @@
+---
+import Icon from './Icon.astro';
+---
+<div class="toast" data-toast role="status" aria-live="polite" hidden>
+  <span class="ico" aria-hidden="true"><Icon name="check" size={18} /></span>
+  <p data-toast-msg></p>
+  <a data-toast-link href="#" hidden></a>
+  <button type="button" class="x" data-toast-close aria-label="Chiudi il messaggio"><Icon name="x" size={16} /></button>
+</div>
+<style>
+  .toast {
+    position: fixed; z-index: 70; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    width: min(560px, calc(100vw - 32px)); transform: translate(-50%, 24px); opacity: 0;
+    display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap;
+    padding: 0.75rem 0.75rem 0.75rem 1rem; border-radius: var(--radius-lg);
+    background: var(--color-foreground); color: var(--color-background); box-shadow: var(--shadow-lg);
+    transition: transform var(--dur-slow) var(--ease-out), opacity var(--dur-base) var(--ease);
+  }
+  .toast:global(.is-in) { transform: translate(-50%, 0); opacity: 1; }
+  .ico { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--color-success); color: var(--color-surface); flex: none; animation: pop 420ms var(--ease-out); }
+  p { flex: 1; min-width: 140px; font-weight: 500; }
+  a { color: inherit; font-weight: 700; text-underline-offset: 3px; white-space: nowrap; }
+  a:hover { color: inherit; opacity: .85; }
+  .x { width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: var(--radius-sm); background: transparent; color: inherit; opacity: .7; cursor: pointer; }
+  .x:hover { opacity: 1; background: rgb(127 127 127 / .2); }
+</style>

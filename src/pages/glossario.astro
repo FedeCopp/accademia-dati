@@ -6,7 +6,7 @@ const terms = (await getCollection('glossario')).map((t) => t.data).sort((a, b) 
 <Base title="Glossario" description="Le parole del mestiere dei dati e della sicurezza, spiegate in modo semplice." current="glossario">
   <section class="section">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-intro>
         <span class="eyebrow">Le parole del mestiere</span>
         <h1>Glossario</h1>
         <p class="lead">{terms.length} termini che incontrerai nel percorso, spiegati in una o due frasi.</p>
@@ -16,7 +16,7 @@ const terms = (await getCollection('glossario')).map((t) => t.data).sort((a, b) 
         <input id="gq" type="search" placeholder="es. join, ETL, CVE" autocomplete="off" />
         <p class="muted" id="gcount" aria-live="polite"></p>
       </div>
-      <dl class="gloss">
+      <dl class="gloss" data-reveal-group>
         {terms.map((t) => (
           <div class="row" data-term={`${t.termine} ${t.definizione}`.toLowerCase()}>
             <dt>{t.termine}</dt>
@@ -29,7 +29,9 @@ const terms = (await getCollection('glossario')).map((t) => t.data).sort((a, b) 
   </section>
 </Base>
 <script>
-  const input = document.getElementById('gq') as HTMLInputElement;
+  document.addEventListener('astro:page-load', () => {
+  const input = document.getElementById('gq') as HTMLInputElement | null;
+  if (!input) return;
   const rows = [...document.querySelectorAll<HTMLElement>('.gloss .row')];
   const count = document.getElementById('gcount')!;
   const empty = document.getElementById('gempty')!;
@@ -39,6 +41,7 @@ const terms = (await getCollection('glossario')).map((t) => t.data).sort((a, b) 
     rows.forEach((r) => { const ok = !q || (r.dataset.term ?? '').includes(q); r.hidden = !ok; if (ok) n++; });
     count.textContent = q ? `${n} risultati` : '';
     empty.hidden = n > 0;
+  });
   });
 </script>
 <style>

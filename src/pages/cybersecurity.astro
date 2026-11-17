@@ -11,7 +11,7 @@ const blocks = [
 <Base title="Cybersecurity" description="Il ponte tra data intelligence e cybersecurity: security data, log e threat intelligence." current="cybersecurity">
   <section class="section">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-intro>
         <span class="eyebrow">Specializzazione opzionale</span>
         <h1>Il ponte verso la cybersecurity</h1>
         <p class="lead">Se dopo la Fase 3 la sicurezza ti incuriosisce ancora, questa è la strada che unisce le due cose: security data e threat intelligence.</p>
@@ -23,9 +23,9 @@ const blocks = [
         <Icon name="arrow-right" size={22} />
         <div class="end"><span class="eyebrow">Diventi</span><p>Analista SOC / threat intelligence</p></div>
       </div>
-      <div class="grid">
+      <div class="grid" data-reveal-group>
         {blocks.map((b) => (
-          <article class="card item">
+          <article class="card card-hover item">
             <h2>{b.t}</h2>
             <p class="muted">{b.d}</p>
             <ul>{b.r.map(([t, u]) => <li><a href={u} target="_blank" rel="noopener">{t}</a></li>)}</ul>

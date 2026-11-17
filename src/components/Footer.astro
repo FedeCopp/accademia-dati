@@ -1,14 +1,49 @@
 ---
 import { url } from '../lib/url';
+const year = new Date().getFullYear();
 ---
 <footer class="site-footer">
-  <div class="container inner">
-    <p><b>Accademia Dati</b> · un percorso di data intelligence da zero, 5–8 ore a settimana.</p>
-    <p class="muted">Le risorse indicate sono gratuite salvo dove specificato. I tuoi progressi restano salvati solo in questo browser.{' '}
-      <a href={url('/come-funziona/')}>Come funziona il sito</a></p>
+  <div class="container cols">
+    <div class="about">
+      <p class="name">Accademia <b>Dati</b></p>
+      <p class="muted">Un percorso di data intelligence da zero, 5–8 ore a settimana. I tuoi progressi restano salvati solo in questo browser.</p>
+    </div>
+    <nav aria-label="Studia">
+      <p class="h">Studia</p>
+      <ul>
+        <li><a href={url('/percorso/')}>Il percorso</a></li>
+        <li><a href={url('/fase-1/')}>Lezioni della Fase 1</a></li>
+        <li><a href={url('/percorso/#progetti')}>Progetti</a></li>
+      </ul>
+    </nav>
+    <nav aria-label="Approfondisci">
+      <p class="h">Approfondisci</p>
+      <ul>
+        <li><a href={url('/cybersecurity/')}>Il ponte verso la cybersecurity</a></li>
+        <li><a href={url('/glossario/')}>Glossario</a></li>
+        <li><a href={url('/come-funziona/')}>Come funziona il sito</a></li>
+      </ul>
+    </nav>
+    <nav aria-label="Progetto">
+      <p class="h">Progetto</p>
+      <ul>
+        <li><a href="https://github.com/FedeCopp/accademia-dati" target="_blank" rel="noopener">Codice su GitHub</a></li>
+        <li><a href={url('/cerca/')}>Cerca nel sito</a></li>
+      </ul>
+    </nav>
   </div>
+  <div class="container bottom muted">© {year} Accademia Dati · Le risorse indicate sono gratuite salvo dove specificato.</div>
 </footer>
 <style>
-  .site-footer { border-top: 1px solid var(--color-border); padding-block: var(--space-xl) var(--space-2xl); font-size: 0.9rem; margin-top: var(--space-2xl); }
-  .inner { display: grid; gap: var(--space-sm); }
+  .site-footer { border-top: 1px solid var(--color-border); background: var(--color-surface); margin-top: var(--space-3xl); font-size: 0.92rem; }
+  .cols { display: grid; gap: var(--space-xl); grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); padding-block: var(--space-2xl) var(--space-xl); }
+  .about { display: grid; gap: var(--space-sm); align-content: start; grid-column: span 1; }
+  @media (min-width: 900px) { .cols { grid-template-columns: 1.6fr 1fr 1fr 1fr; } }
+  .name { font-family: var(--font-heading); font-weight: 600; font-size: 1.05rem; }
+  .name b { color: var(--color-primary); }
+  .h { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-muted-foreground); margin-bottom: var(--space-sm); }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  a { color: var(--color-foreground); text-decoration: none; display: inline-flex; min-height: 32px; align-items: center; }
+  a:hover { color: var(--color-primary); text-decoration: underline; }
+  .bottom { border-top: 1px solid var(--color-border); padding-block: var(--space-md) var(--space-xl); font-size: 0.84rem; }
 </style>

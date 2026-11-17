@@ -2,140 +2,182 @@
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import ProgressCard from '../components/ProgressCard.astro';
+import Roadmap from '../components/Roadmap.astro';
 import { url } from '../lib/url';
 
 const pipeline = [
-  { code: 'extract', name: 'Raccogli', text: 'File CSV, API, siti e database, con Python e richieste HTTP.', icon: 'download', fase: 'Fasi 1–2' },
-  { code: 'clean', name: 'Pulisci', text: 'Valori mancanti, duplicati, date sbagliate. Con pandas e SQL.', icon: 'filter', fase: 'Fase 1' },
-  { code: 'model', name: 'Modella', text: 'Tabelle ordinate e collegate, con dbt, DuckDB e PostgreSQL.', icon: 'layers', fase: 'Fase 2' },
-  { code: 'analyze', name: 'Analizza', text: 'Aggregazioni, trend, statistica e un po\' di machine learning.', icon: 'chart', fase: 'Fasi 3–4' },
-  { code: 'tell', name: 'Racconta', text: 'Grafici e dashboard che aiutano a prendere una decisione.', icon: 'presentation', fase: 'Fase 3' },
+  { code: 'extract', name: 'Raccogli', text: 'CSV, API e database con Python.', icon: 'download' },
+  { code: 'clean', name: 'Pulisci', text: 'Mancanti, duplicati, date sbagliate.', icon: 'filter' },
+  { code: 'model', name: 'Modella', text: 'Tabelle ordinate con SQL e dbt.', icon: 'layers' },
+  { code: 'analyze', name: 'Analizza', text: 'Trend, statistica, un po\' di ML.', icon: 'chart' },
+  { code: 'tell', name: 'Racconta', text: 'Grafici e dashboard che decidono.', icon: 'presentation' },
+] as const;
+const steps = [
+  { t: 'Apri la lezione della settimana', d: 'Ogni settimana ha una pagina con obiettivo, cosa studiare e una breve spiegazione. Il sito ti indica sempre qual è la prossima.', icon: 'book' },
+  { t: 'Studia e fai l\'esercizio', d: 'Tre sessioni: teoria, pratica e diario su GitHub. L\'esercizio è la parte che conta di più.', icon: 'pencil' },
+  { t: 'Segnala come fatta', d: 'Un clic e il progresso si aggiorna. Ogni tre mesi chiudi una fase con un progetto da mostrare.', icon: 'check-circle' },
 ] as const;
 ---
 <Base title="Accademia Dati" description="Un percorso di data intelligence da zero: 14 mesi, 5–8 ore a settimana, un progetto reale per ogni fase.">
   <section class="hero">
+    <div class="bg dot-grid" aria-hidden="true"></div>
     <div class="container hero-grid">
       <div class="hero-copy">
-        <span class="eyebrow">Data intelligence · da zero · 5–8 ore a settimana</span>
-        <h1>Dai dati grezzi alle decisioni, <span class="hl">una settimana alla volta.</span></h1>
-        <p class="lead">Un percorso di circa 14 mesi per imparare a raccogliere, pulire, modellare e raccontare i dati. Ogni fase si chiude con un progetto vero su GitHub: è quello, più dei certificati, che dimostra cosa sai fare.</p>
-        <div class="cta">
-          <a class="btn btn-primary" href={url('/fase-1/settimana-01/')}>Inizia dalla settimana 1 <Icon name="arrow-right" /></a>
-          <a class="btn btn-ghost" href={url('/percorso/')}>Vedi il percorso completo</a>
+        <span class="eyebrow pill" data-intro style="--i:0">Data intelligence · da zero · 5–8 ore a settimana</span>
+        <h1 data-intro style="--i:1">Impara a trasformare i dati in <span class="hl">decisioni</span>.</h1>
+        <p class="lead" data-intro style="--i:2">Un percorso guidato di 14 mesi, una lezione alla settimana. Ogni fase si chiude con un progetto vero su GitHub, che dimostra cosa sai fare.</p>
+        <div class="cta" data-intro style="--i:3">
+          <a class="btn btn-primary btn-lg" href={url('/fase-1/settimana-01/')} data-cta-start>
+            <span data-label>Inizia dalla settimana 1</span><Icon name="arrow-right" />
+          </a>
+          <a class="btn btn-ghost btn-lg" href={url('/percorso/')}>Guarda il percorso</a>
         </div>
-        <dl class="facts">
-          <div><dt>Durata</dt><dd>~14 mesi</dd></div>
-          <div><dt>Impegno</dt><dd>5–8 h/sett.</dd></div>
-          <div><dt>Budget 1° anno</dt><dd>0–300 €</dd></div>
-          <div><dt>Progetti</dt><dd>5</dd></div>
-        </dl>
+        <ul class="facts" data-intro style="--i:4">
+          <li><Icon name="clock" size={16} /> 5–8 ore a settimana</li>
+          <li><Icon name="flag" size={16} /> 5 progetti</li>
+          <li><Icon name="book" size={16} /> Risorse gratuite</li>
+        </ul>
       </div>
-      <div class="hero-side">
+      <div class="hero-side" data-intro style="--i:3">
         <ProgressCard />
-        <pre class="query" aria-label="Esempio di query SQL della settimana 7"><code><span class="c">-- settimana 07 · variazione mese su mese</span>
+        <div class="terminal" aria-label="Esempio di query SQL della settimana 7">
+          <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>settimana-07.sql</span></div>
+          <pre><code><span class="c">-- variazione mese su mese</span>
 <span class="k">SELECT</span> mese, totale,
   totale - <span class="f">LAG</span>(totale)
     <span class="k">OVER</span> (<span class="k">ORDER BY</span> mese) <span class="k">AS</span> delta
-<span class="k">FROM</span> mensile;</code></pre>
+<span class="k">FROM</span> mensile;<span class="cursor" aria-hidden="true"></span></code></pre>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <div class="section-head">
-        <span class="eyebrow">Cosa fa chi lavora con i dati</span>
-        <h2>La pipeline che imparerai a costruire</h2>
-        <p class="lead">Data intelligence significa portare un dato da “file disordinato” a “risposta a una domanda”. Ogni fase del percorso copre un pezzo di questa catena.</p>
+      <div class="section-head center" data-reveal>
+        <span class="eyebrow">Come funziona</span>
+        <h2>Tre passi, ogni settimana</h2>
       </div>
-      <ol class="pipe">
-        {pipeline.map((s) => (
+      <ol class="steps" data-reveal-group>
+        {steps.map((s, i) => (
           <li class="step card">
-            <div class="step-top">
-              <span class="step-icon"><Icon name={s.icon} size={20} /></span>
-              <code>{s.code}()</code>
-            </div>
-            <h3>{s.name}</h3>
-            <p class="muted">{s.text}</p>
-            <span class="step-fase">{s.fase}</span>
+            <span class="step-num">{i + 1}</span>
+            <span class="step-ico"><Icon name={s.icon} size={22} /></span>
+            <h3>{s.t}</h3>
+            <p class="muted">{s.d}</p>
           </li>
         ))}
       </ol>
     </div>
   </section>
 
+  <section class="section tinted">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">Il percorso · circa 14 mesi</span>
+        <h2>Cinque fasi, dalla prima riga di codice alla specializzazione</h2>
+        <p class="lead">Parti dalla Fase 1. Le altre si sbloccano una dopo l'altra: clicca una tappa per vederne argomenti e progetto.</p>
+      </div>
+      <div data-reveal><Roadmap /></div>
+    </div>
+  </section>
+
   <section class="section">
     <div class="container">
-      <div class="section-head">
-        <span class="eyebrow">Perché i dati prima della cybersecurity</span>
-        <h2>La scelta, in tre motivi</h2>
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">Cosa imparerai</span>
+        <h2>La catena che porta un dato a una decisione</h2>
       </div>
-      <div class="why">
-        <article>
-          <Icon name="target" size={24} />
-          <h3>Risultati visibili ogni settimana</h3>
-          <p class="muted">Con 5–8 ore serve un campo dove ogni sessione produce qualcosa: una query che funziona, un grafico, una tabella pulita. Così la motivazione resta alta.</p>
-        </article>
-        <article>
-          <Icon name="layers" size={24} />
-          <h3>Basi che valgono ovunque</h3>
-          <p class="muted">Python, SQL, Linux e reti servono sia nei dati sia nella sicurezza. Se poi cambi strada, nulla di quello che studi qui va sprecato.</p>
-        </article>
-        <article>
-          <Icon name="shield" size={24} />
-          <h3>Il ponte esiste già</h3>
-          <p class="muted">Threat intelligence e SOC sono lavori sui dati: log, eventi, indicatori. La Fase 4 ti porta proprio lì. <a href={url('/cybersecurity/')}>Scopri come</a></p>
-        </article>
+      <ol class="pipe" data-reveal-group>
+        {pipeline.map((s, i) => (
+          <li class="pstep">
+            <span class="p-ico"><Icon name={s.icon} size={20} /></span>
+            <div>
+              <h3>{s.name}</h3>
+              <p class="muted">{s.text}</p>
+            </div>
+            {i < pipeline.length - 1 && <span class="p-arrow" aria-hidden="true"><Icon name="arrow-right" size={16} /></span>}
+          </li>
+        ))}
+      </ol>
+      <div class="why" data-reveal-group>
+        <p><Icon name="target" size={18} /><span><b>Risultati ogni settimana.</b> Una query, un grafico, una tabella pulita.</span></p>
+        <p><Icon name="layers" size={18} /><span><b>Basi che valgono ovunque.</b> Python e SQL servono anche nella sicurezza.</span></p>
+        <p><Icon name="shield" size={18} /><span><b>Ponte verso la cybersecurity.</b> <a href={url('/cybersecurity/')}>Scopri come</a></span></p>
       </div>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <div class="section-head">
-        <span class="eyebrow">Il metodo</span>
-        <h2>Una settimana tipo</h2>
-        <p class="lead">Tre sessioni fisse in calendario. La costanza conta più dell'intensità.</p>
+      <div class="final card" data-reveal>
+        <div>
+          <h2>Pronto per la prima lezione?</h2>
+          <p class="muted">Ti servono un computer e due ore. Si comincia installando gli strumenti.</p>
+        </div>
+        <a class="btn btn-primary btn-lg" href={url('/fase-1/settimana-01/')} data-cta-start>
+          <span data-label>Inizia dalla settimana 1</span><Icon name="arrow-right" />
+        </a>
       </div>
-      <div class="rhythm">
-        <div class="card"><span class="eyebrow">Sessione A · 2 h</span><h3>Teoria</h3><p class="muted">Lezione o capitolo della risorsa indicata, con appunti scritti a mano o nel diario.</p></div>
-        <div class="card"><span class="eyebrow">Sessione B · 2 h</span><h3>Pratica</h3><p class="muted">L'esercizio della settimana, scritto da te senza copiare la soluzione.</p></div>
-        <div class="card"><span class="eyebrow">Sessione C · 1–2 h</span><h3>Diario</h3><p class="muted">Commit su GitHub e tre righe: cosa ho capito, cosa no, cosa provo la prossima volta.</p></div>
-      </div>
-      <a class="btn btn-primary" href={url('/fase-1/')}>Vai alle lezioni della Fase 1 <Icon name="arrow-right" /></a>
     </div>
   </section>
 </Base>
 
 <style>
-  .hero { padding-block: var(--space-3xl) var(--space-2xl); background:
-    radial-gradient(1200px 400px at 85% -10%, var(--color-primary-soft), transparent 70%); }
-  .hero-grid { display: grid; gap: var(--space-2xl); grid-template-columns: minmax(0, 1fr); align-items: center; }
-  @media (min-width: 960px) { .hero-grid { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); } }
-  .hero-copy { display: grid; gap: var(--space-lg); }
-  .hl { color: var(--color-primary); }
+  .hero { position: relative; overflow: hidden; padding-block: clamp(3rem, 8vw, 6.5rem) clamp(3rem, 7vw, 5rem); }
+  .bg { position: absolute; inset: 0; mask-image: radial-gradient(ellipse 70% 60% at 70% 30%, #000 20%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse 70% 60% at 70% 30%, #000 20%, transparent 75%); pointer-events: none; }
+  .hero::after { content: ''; position: absolute; width: 520px; height: 520px; right: -120px; top: -180px; border-radius: 50%; background: radial-gradient(circle, var(--color-primary-soft), transparent 65%); pointer-events: none; z-index: 0; }
+  .hero-grid { position: relative; z-index: 1; display: grid; gap: clamp(2rem, 5vw, 4rem); grid-template-columns: minmax(0, 1fr); align-items: center; }
+  @media (min-width: 980px) { .hero-grid { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); } }
+  .hero-copy { display: grid; gap: var(--space-lg); justify-items: start; }
+  .pill { padding: 0.35rem 0.8rem; border-radius: 999px; background: var(--color-primary-soft); }
+  .hl { color: var(--color-primary); position: relative; white-space: nowrap; }
+  .hl::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0.06em; height: 0.12em; background: var(--color-accent-fill); opacity: .35; border-radius: 2px; transform-origin: left; }
+  .js-motion .hl::after { animation: grow 900ms var(--ease-out) 700ms both; }
+  @keyframes grow { from { transform: scaleX(0); } }
   .cta { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
-  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-md); margin: var(--space-sm) 0 0; padding-top: var(--space-lg); border-top: 1px solid var(--color-border); }
-  .facts div { display: grid; gap: 2px; }
-  .facts dt { font-size: 0.8rem; color: var(--color-muted-foreground); }
-  .facts dd { margin: 0; font-family: var(--font-mono); font-weight: 600; font-size: 1.1rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  :global(.btn-lg) { min-height: 52px; padding: 0.8rem 1.5rem; font-size: 1rem; border-radius: 12px; }
+  .btn-primary :global(svg) { transition: transform var(--dur-base) var(--ease-out); }
+  .btn-primary:hover :global(svg) { transform: translateX(3px); }
+  .btn-primary { box-shadow: 0 8px 20px -10px var(--color-primary); }
+  .facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-sm) var(--space-lg); color: var(--color-muted-foreground); font-size: 0.92rem; }
+  .facts li { display: inline-flex; align-items: center; gap: 6px; }
+  .facts :global(svg) { color: var(--color-primary); }
   .hero-side { display: grid; gap: var(--space-md); min-width: 0; }
-  .query { margin: 0; background: var(--code-bg); color: var(--code-fg); border-radius: var(--radius-lg); padding: var(--space-lg); font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.65; overflow-x: auto; }
-  .query code { background: none; padding: 0; }
-  .query .k { color: var(--code-kw); } .query .f { color: var(--code-fn); } .query .c { color: var(--code-str); }
+  .terminal { background: var(--code-bg); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); }
+  .term-bar { display: flex; align-items: center; gap: 6px; padding: 0.6rem 0.9rem; border-bottom: 1px solid rgb(255 255 255 / .06); }
+  .term-bar i { width: 10px; height: 10px; border-radius: 50%; background: rgb(255 255 255 / .16); }
+  .term-bar span { margin-left: 8px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--code-str); }
+  .terminal pre { margin: 0; padding: var(--space-lg); color: var(--code-fg); font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.7; overflow-x: auto; }
+  .terminal code { background: none; padding: 0; }
+  .k { color: var(--code-kw); } .f { color: var(--code-fn); } .c { color: var(--code-str); }
+  .cursor { display: inline-block; width: 8px; height: 1.05em; margin-left: 4px; vertical-align: text-bottom; background: var(--code-kw); }
+  .js-motion .cursor { animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
 
-  .pipe { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-md); grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); counter-reset: s; }
-  .step { padding: var(--space-lg); display: grid; gap: var(--space-sm); align-content: start; position: relative; transition: border-color 200ms var(--ease), transform 200ms var(--ease); }
-  .step:hover { border-color: var(--color-primary); }
-  .step-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); }
-  .step-icon { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; background: var(--color-primary-soft); color: var(--color-primary); }
-  .step code { font-size: 0.75rem; background: transparent; color: var(--color-muted-foreground); padding: 0; }
-  .step-fase { font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-accent); margin-top: auto; }
+  .center { margin-inline: auto; text-align: center; justify-items: center; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-md); grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .step { position: relative; padding: var(--space-xl) var(--space-lg) var(--space-lg); display: grid; gap: var(--space-sm); align-content: start; }
+  .step-num { position: absolute; top: var(--space-md); right: var(--space-lg); font-family: var(--font-mono); font-size: 2.6rem; font-weight: 600; line-height: 1; color: var(--color-muted); }
+  .step-ico { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--color-primary-soft); color: var(--color-primary); margin-bottom: var(--space-xs); }
 
-  .why { display: grid; gap: var(--space-xl); grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
-  .why article { display: grid; gap: var(--space-sm); align-content: start; }
-  .why article > :global(svg) { color: var(--color-primary); }
+  .tinted { background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--color-primary-soft) 45%, transparent) 30%, transparent); }
 
-  .rhythm { display: grid; gap: var(--space-md); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: var(--space-xl); }
-  .rhythm .card { padding: var(--space-lg); display: grid; gap: var(--space-xs); align-content: start; }
+  .pipe { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-md); }
+  .pstep { position: relative; display: grid; gap: var(--space-sm); align-content: start; }
+  .pstep h3 { font-size: 1.05rem; }
+  .pstep p { font-size: 0.92rem; }
+  .p-ico { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-primary); }
+  .p-arrow { position: absolute; top: 12px; right: -4px; color: var(--color-border-strong); }
+  @media (max-width: 860px) {
+    .pipe { grid-template-columns: 1fr; gap: var(--space-md); }
+    .pstep { grid-template-columns: 40px 1fr; gap: var(--space-md); align-items: center; }
+    .p-arrow { display: none; }
+  }
+  .why { display: grid; gap: var(--space-md); grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: var(--space-2xl); padding-top: var(--space-xl); border-top: 1px solid var(--color-border); }
+  .why p { display: flex; gap: var(--space-sm); align-items: flex-start; font-size: 0.95rem; }
+  .why :global(svg) { color: var(--color-primary); flex: none; margin-top: 3px; }
+
+  .final { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-lg); padding: clamp(1.5rem, 4vw, 2.5rem); background: linear-gradient(120deg, var(--color-primary-soft), var(--color-surface) 70%); border-color: color-mix(in srgb, var(--color-primary) 30%, var(--color-border)); }
+  .final > div { display: grid; gap: var(--space-xs); }
 </style>

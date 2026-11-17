@@ -1,15 +1,17 @@
 /**
  * Progressi della Fase 1, salvati solo nel browser (localStorage).
- * Ogni elemento interessato dichiara cosa mostrare con attributi data-*:
- *  [data-week-toggle="n"]   bottone "segna come fatta"
- *  [data-week-state="n"]    contenitore che riceve la classe .is-done
- *  [data-progress-count]    testo "x / 12"
- *  [data-progress-bar]      barra (stile width)
- *  [data-progress-meter]    elemento role=progressbar (aria-valuenow)
- *  [data-next-week]         link alla prossima settimana da fare
+ * Attributi letti:
+ *  [data-week-toggle="n"]  bottone "segna come fatta" (aria-pressed)
+ *  [data-week-state="n"]   riceve .is-done e, per la prossima settimana, .is-next
+ *  [data-progress-count]   testo "x / 12"      [data-progress-bar]  larghezza della barra
+ *  [data-progress-meter]   role=progressbar     [data-progress-pct]  testo "x%"
+ *  [data-next-week]        link alla prossima lezione; [data-label] riceve il testo
+ *  [data-cta-start]        bottone principale: "Inizia" oppure "Continua"
  */
 const KEY = 'accademia-dati-weeks-v1';
 const TOTAL = 12;
+const base = () => document.documentElement.dataset.base ?? '';
+const slug = (n: number) => `${base()}/fase-1/settimana-${String(n).padStart(2, '0')}/`;
 
 function read(): Set<number> {
   try {
@@ -22,13 +24,24 @@ function read(): Set<number> {
 function write(s: Set<number>) {
   try { localStorage.setItem(KEY, JSON.stringify([...s].sort((a, b) => a - b))); } catch { /* storage bloccato */ }
 }
+function nextOf(done: Set<number>) {
+  for (let i = 1; i <= TOTAL; i++) if (!done.has(i)) return i;
+  return 0;
+}
+function titles(): Record<string, string> {
+  try { return JSON.parse(document.documentElement.dataset.weekTitles ?? '{}'); } catch { return {}; }
+}
 
 function render() {
   const done = read();
   const count = done.size;
+  const next = nextOf(done);
+  const t = titles();
 
   document.querySelectorAll<HTMLElement>('[data-week-state]').forEach((el) => {
-    el.classList.toggle('is-done', done.has(Number(el.dataset.weekState)));
+    const n = Number(el.dataset.weekState);
+    el.classList.toggle('is-done', done.has(n));
+    el.classList.toggle('is-next', n === next);
   });
   document.querySelectorAll<HTMLButtonElement>('[data-week-toggle]').forEach((btn) => {
     const isDone = done.has(Number(btn.dataset.weekToggle));
@@ -37,37 +50,61 @@ function render() {
     if (label) label.textContent = isDone ? (btn.dataset.labelDone ?? 'Fatta') : (btn.dataset.labelTodo ?? 'Segna come fatta');
   });
   document.querySelectorAll<HTMLElement>('[data-progress-count]').forEach((el) => { el.textContent = `${count} / ${TOTAL}`; });
-  document.querySelectorAll<HTMLElement>('[data-progress-bar]').forEach((el) => { el.style.width = `${(count / TOTAL) * 100}%`; });
+  document.querySelectorAll<HTMLElement>('[data-progress-pct]').forEach((el) => { el.textContent = `${Math.round((count / TOTAL) * 100)}%`; });
+  document.querySelectorAll<HTMLElement>('[data-progress-bar]').forEach((el) => { el.style.setProperty('--p', String(count / TOTAL)); });
   document.querySelectorAll<HTMLElement>('[data-progress-meter]').forEach((el) => el.setAttribute('aria-valuenow', String(count)));
 
-  let next = 0;
-  for (let i = 1; i <= TOTAL; i++) if (!done.has(i)) { next = i; break; }
   document.querySelectorAll<HTMLAnchorElement>('[data-next-week]').forEach((a) => {
-    const titles = JSON.parse(a.dataset.titles ?? '{}') as Record<string, string>;
-    const base = a.dataset.base ?? '';
     const text = a.querySelector('[data-label]') ?? a;
-    if (next) {
-      a.href = `${base}/fase-1/settimana-${String(next).padStart(2, '0')}/`;
-      text.textContent = `Settimana ${next}: ${titles[next] ?? ''}`;
-    } else {
-      a.href = `${base}/percorso/#fase-2`;
-      text.textContent = 'Fase 1 completata: passa alla Fase 2';
-    }
+    if (next) { a.href = slug(next); text.textContent = `Settimana ${next} · ${t[next] ?? ''}`; }
+    else { a.href = `${base()}/percorso/#fase-2`; text.textContent = 'Fase 1 completata: passa alla Fase 2'; }
+  });
+  document.querySelectorAll<HTMLAnchorElement>('[data-cta-start]').forEach((a) => {
+    const text = a.querySelector('[data-label]') ?? a;
+    if (count === 0) { a.href = slug(1); text.textContent = 'Inizia dalla settimana 1'; }
+    else if (next) { a.href = slug(next); text.textContent = `Continua: settimana ${next}`; }
+    else { a.href = `${base()}/percorso/#fase-2`; text.textContent = 'Vai alla Fase 2'; }
   });
   document.documentElement.dataset.phase1Done = String(count === TOTAL);
+  document.documentElement.dataset.started = String(count > 0);
+}
+
+function toast(msg: string, link?: { href: string; text: string }) {
+  const host = document.querySelector<HTMLElement>('[data-toast]');
+  if (!host) return;
+  host.querySelector('[data-toast-msg]')!.textContent = msg;
+  const a = host.querySelector<HTMLAnchorElement>('[data-toast-link]')!;
+  a.hidden = !link;
+  if (link) { a.href = link.href; a.textContent = link.text; }
+  host.hidden = false;
+  host.classList.remove('is-in'); void host.offsetWidth; host.classList.add('is-in');
+  clearTimeout(Number(host.dataset.timer));
+  host.dataset.timer = String(setTimeout(() => { host.classList.remove('is-in'); setTimeout(() => (host.hidden = true), 300); }, 5000));
 }
 
 document.addEventListener('click', (e) => {
-  const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-week-toggle]');
+  const target = e.target as HTMLElement;
+  const btn = target.closest<HTMLButtonElement>('[data-week-toggle]');
   if (btn) {
     const n = Number(btn.dataset.weekToggle);
     const done = read();
-    done.has(n) ? done.delete(n) : done.add(n);
+    const adding = !done.has(n);
+    adding ? done.add(n) : done.delete(n);
     write(done);
     render();
+    if (adding) {
+      const nx = nextOf(done);
+      toast(`Settimana ${n} completata. ${done.size} su ${TOTAL}.`,
+        nx ? { href: slug(nx), text: `Vai alla settimana ${nx}` } : { href: `${base()}/percorso/#fase-2`, text: 'Passa alla Fase 2' });
+    }
     return;
   }
-  const reset = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-progress-reset]');
+  if (target.closest('[data-toast-close]')) {
+    const host = document.querySelector<HTMLElement>('[data-toast]');
+    if (host) { host.classList.remove('is-in'); host.hidden = true; }
+    return;
+  }
+  const reset = target.closest<HTMLButtonElement>('[data-progress-reset]');
   if (reset) {
     const msg = document.querySelector<HTMLElement>('[data-reset-msg]');
     if (reset.dataset.armed) {
@@ -84,4 +121,4 @@ document.addEventListener('click', (e) => {
   }
 });
 
-render();
+document.addEventListener('astro:page-load', render);

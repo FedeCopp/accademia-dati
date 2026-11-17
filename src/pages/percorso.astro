@@ -1,16 +1,62 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
 import PhaseTimeline from '../components/PhaseTimeline.astro';
+import { url } from '../lib/url';
+const phases = (await getCollection('fasi')).sort((a, b) => a.data.numero - b.data.numero);
 ---
 <Base title="Il percorso" description="Le cinque fasi del percorso di data intelligence, con argomenti, strumenti, risorse e progetto di ogni fase." current="percorso">
-  <section class="section">
+  <section class="section intro">
     <div class="container">
       <div class="section-head">
-        <span class="eyebrow">Il percorso completo · circa 14 mesi</span>
-        <h1>Cinque fasi, un progetto per fase</h1>
-        <p class="lead">I mesi sono indicativi per 5–8 ore a settimana. Se una fase richiede più tempo va bene: conta finire il progetto, non rispettare la data.</p>
+        <span class="eyebrow" data-intro style="--i:0">Il percorso completo · circa 14 mesi</span>
+        <h1 data-intro style="--i:1">Cinque fasi, un progetto per fase</h1>
+        <p class="lead" data-intro style="--i:2">I mesi sono indicativi per 5–8 ore a settimana. Se una fase richiede più tempo va bene: conta finire il progetto, non rispettare la data.</p>
       </div>
-      <PhaseTimeline detailed />
+      <nav class="jump" aria-label="Vai a una fase" data-intro style="--i:3">
+        {phases.map((p) => <a href={`#fase-${p.data.numero}`}><b>{p.data.numero}</b> {p.data.titolo}</a>)}
+        <a href="#progetti"><Icon name="flag" size={14} /> Progetti</a>
+      </nav>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container"><PhaseTimeline detailed /></div>
+  </section>
+  <section class="section" id="progetti">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">Il tuo portfolio</span>
+        <h2>I cinque progetti</h2>
+        <p class="lead">Ogni progetto si costruisce sul precedente: dai dati grezzi alla dashboard, fino all'intelligence sulle minacce. Pubblicali su GitHub, uno per repository, con un README chiaro.</p>
+      </div>
+      <ol class="projects" data-reveal-group>
+        {phases.map((p) => (
+          <li class="card card-hover proj">
+            <span class="eyebrow">Fase {p.data.numero}</span>
+            <h3>{p.data.titolo}</h3>
+            <p class="muted">{p.data.progetto}</p>
+            <a href={`#fase-${p.data.numero}`}>Criteri e risorse <Icon name="arrow-right" size={16} /></a>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 </Base>
+<style>
+  .intro { padding-bottom: 0; }
+  .intro + .section { border-top: 0; }
+  .jump { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+  .jump a {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 0.9rem; border-radius: 999px;
+    border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-foreground);
+    text-decoration: none; font-size: 0.9rem; font-weight: 500;
+    transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+  }
+  .jump a:hover { border-color: var(--color-primary); background: var(--color-primary-soft); }
+  .jump b { font-family: var(--font-mono); color: var(--color-primary); }
+  #progetti { scroll-margin-top: var(--header-h); }
+  .projects { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-md); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .proj { padding: var(--space-lg); display: grid; gap: var(--space-sm); align-content: start; }
+  .proj a { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; min-height: 40px; }
+</style>

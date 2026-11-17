@@ -1,15 +1,20 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import { getCollection } from 'astro:content';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Toast from '../components/Toast.astro';
 
-interface Props { title: string; description: string; current?: string }
-const { title, description, current } = Astro.props;
+interface Props { title: string; description: string; current?: string; readingBar?: boolean }
+const { title, description, current, readingBar = false } = Astro.props;
 const fullTitle = title === 'Accademia Dati' ? title : `${title} · Accademia Dati`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const weekTitles = Object.fromEntries((await getCollection('settimane')).map((w) => [w.data.numero, w.data.titolo]));
 ---
 <!doctype html>
-<html lang="it">
+<html lang="it" data-base={base} data-week-titles={JSON.stringify(weekTitles)}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -20,23 +25,35 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta name="theme-color" content="#0f766e" />
-    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg`} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" />
     <script is:inline>
-      try { const t = localStorage.getItem('accademia-dati-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+      (function () {
+        var root = document.documentElement;
+        function apply() {
+          try { var t = localStorage.getItem('accademia-dati-theme'); if (t === 'light' || t === 'dark') root.dataset.theme = t; } catch (e) {}
+          if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) root.classList.add('js-motion');
+        }
+        apply();
+        document.addEventListener('astro:after-swap', apply);
+      })();
     </script>
+    <ClientRouter fallback="swap" />
   </head>
   <body>
     <a class="skip" href="#contenuto">Vai al contenuto</a>
+    {readingBar && <div class="reading-bar" aria-hidden="true"><span data-reading-bar></span></div>}
     <Header current={current} />
     <main id="contenuto" data-pagefind-body>
       <slot />
     </main>
     <Footer />
+    <Toast />
     <script>
       import '../scripts/progress.ts';
+      import '../scripts/motion.ts';
     </script>
   </body>
 </html>
@@ -48,4 +65,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     padding: 0.6rem 1rem; border-radius: var(--radius-md); font-weight: 600;
   }
   .skip:focus { top: 12px; }
+  .reading-bar { position: fixed; inset: 0 0 auto; height: 3px; z-index: 60; pointer-events: none; padding-top: env(safe-area-inset-top, 0px); }
+  .reading-bar span { display: block; height: 3px; background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); transform-origin: left; transform: scaleX(0); }
 </style>

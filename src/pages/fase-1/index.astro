@@ -6,36 +6,51 @@ import ProgressCard from '../../components/ProgressCard.astro';
 import { url, pad, weekSlug } from '../../lib/url';
 
 const weeks = (await getCollection('settimane')).sort((a, b) => a.data.numero - b.data.numero);
-const months = [1, 2, 3].map((m) => ({ m, weeks: weeks.filter((w) => Math.ceil(w.data.numero / 4) === m) }));
-const monthTitles = ['Strumenti e Python', 'SQL', 'pandas e primo progetto'];
+const months = [
+  { m: 1, t: 'Strumenti e Python' },
+  { m: 2, t: 'SQL' },
+  { m: 3, t: 'pandas e primo progetto' },
+].map((x) => ({ ...x, weeks: weeks.filter((w) => Math.ceil(w.data.numero / 4) === x.m) }));
 ---
-<Base title="Fase 1, le 12 lezioni" description="Le dodici settimane della Fase 1: Python, terminale, SQL, pandas, visualizzazione e il primo progetto." current="fase-1">
-  <section class="section">
-    <div class="container layout">
+<Base title="Lezioni della Fase 1" description="Le dodici lezioni settimanali della Fase 1: Python, terminale, SQL, pandas, visualizzazione e il primo progetto." current="fase-1">
+  <section class="section top">
+    <div class="container head-grid">
       <div class="section-head">
-        <span class="eyebrow">Fase 1 · Fondamenta · mesi 1–3</span>
-        <h1>Le prime 12 settimane</h1>
-        <p class="lead">Apri una lezione, segui il piano, fai l'esercizio e segnala come fatta. I progressi restano salvati in questo browser.</p>
+        <span class="eyebrow" data-intro style="--i:0">Fase 1 · Fondamenta · mesi 1–3</span>
+        <h1 data-intro style="--i:1">Le 12 lezioni</h1>
+        <p class="lead" data-intro style="--i:2">Una lezione a settimana, in ordine. Apri quella evidenziata, fai l'esercizio e segnala come fatta: il sito ti porta alla successiva.</p>
       </div>
-      <div class="aside"><ProgressCard /></div>
+      <div data-intro style="--i:2"><ProgressCard /></div>
     </div>
     <div class="container">
-      {months.map(({ m, weeks }) => (
+      <ul class="rhythm" aria-label="Ritmo settimanale consigliato" data-intro style="--i:3">
+        <li><b>A · 2 h</b> Teoria</li>
+        <li><b>B · 2 h</b> Esercizio</li>
+        <li><b>C · 1–2 h</b> Diario su GitHub</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section list">
+    <div class="container">
+      {months.map(({ m, t, weeks }) => (
         <div class="month">
-          <h2 class="month-title"><span class="eyebrow">Mese {m}</span> {monthTitles[m - 1]}</h2>
-          <ol class="weeks">
+          <h2 class="month-title" data-reveal><span class="eyebrow">Mese {m}</span>{t}</h2>
+          <ol class="weeks" data-reveal-group>
             {weeks.map((w) => (
-              <li class="week card" data-week-state={w.data.numero}>
+              <li class="week card card-hover" data-week-state={w.data.numero}>
                 <a class="week-link" href={url(`/fase-1/${weekSlug(w.data.numero)}/`)}>
                   <span class="num">{pad(w.data.numero)}</span>
                   <span class="txt">
+                    <span class="badge b-next">Prossima</span>
+                    <span class="badge b-done"><Icon name="check" size={12} /> Fatta</span>
                     <strong>{w.data.titolo}</strong>
                     <span class="muted">{w.data.sottotitolo}</span>
                   </span>
+                  <Icon name="arrow-right" size={18} class="go" />
                 </a>
-                <button class="toggle" type="button" data-week-toggle={w.data.numero} aria-pressed="false" aria-label={`Settimana ${w.data.numero} completata`} data-label-todo="Da fare" data-label-done="Fatta">
-                  <span class="box" aria-hidden="true"><Icon name="check" size={14} /></span>
-                  <span data-label>Da fare</span>
+                <button class="toggle" type="button" data-week-toggle={w.data.numero} aria-pressed="false" aria-label={`Settimana ${w.data.numero} completata`}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
                 </button>
               </li>
             ))}
@@ -51,34 +66,54 @@ const monthTitles = ['Strumenti e Python', 'SQL', 'pandas e primo progetto'];
 </Base>
 
 <style>
-  .layout { display: grid; gap: var(--space-xl); grid-template-columns: minmax(0, 1fr); align-items: end; margin-bottom: var(--space-xl); }
-  .layout .section-head { margin-bottom: 0; }
-  @media (min-width: 900px) { .layout { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); } }
+  .top { padding-bottom: var(--space-xl); }
+  .list { border-top: 0 !important; padding-top: var(--space-lg); }
+  .head-grid { display: grid; gap: var(--space-xl); grid-template-columns: minmax(0, 1fr); align-items: end; margin-bottom: var(--space-lg); }
+  .head-grid .section-head { margin-bottom: 0; }
+  @media (min-width: 900px) { .head-grid { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); } }
+  .rhythm { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+  .rhythm li { display: inline-flex; gap: 8px; align-items: center; padding: 0.4rem 0.85rem; border-radius: 999px; background: var(--color-muted); font-size: 0.9rem; }
+  .rhythm b { font-family: var(--font-mono); font-size: 0.78rem; color: var(--color-primary); font-weight: 600; }
+
   .month + .month { margin-top: var(--space-2xl); }
-  .month-title { display: flex; align-items: baseline; gap: var(--space-md); font-size: 1.2rem; margin-bottom: var(--space-md); flex-wrap: wrap; }
-  .weeks { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-sm); }
-  .week { display: flex; align-items: center; gap: var(--space-sm); padding-right: var(--space-sm); transition: border-color 180ms var(--ease), background-color 180ms var(--ease); }
-  .week:hover { border-color: var(--color-primary); }
-  .week-link { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md) var(--space-lg); color: inherit; text-decoration: none; min-height: 64px; }
-  .num { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600; color: var(--color-primary); font-variant-numeric: tabular-nums; width: 2ch; flex: none; }
-  .txt { display: grid; min-width: 0; }
-  .txt .muted { font-size: 0.9rem; }
+  .month-title { display: flex; align-items: baseline; gap: var(--space-md); font-size: 1.3rem; margin-bottom: var(--space-md); flex-wrap: wrap; }
+  .weeks { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-md); grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+  .week { position: relative; display: flex; align-items: stretch; overflow: hidden; }
+  .week::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: transparent; transition: background-color var(--dur-base) var(--ease); }
+  .week-link { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-md); padding: var(--space-lg) var(--space-sm) var(--space-lg) var(--space-lg); color: inherit; text-decoration: none; }
+  .num { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 600; color: var(--color-border-strong); font-variant-numeric: tabular-nums; flex: none; transition: color var(--dur-base) var(--ease); }
+  .txt { display: grid; gap: 2px; min-width: 0; flex: 1; }
+  .txt strong { font-size: 1.02rem; }
+  .txt .muted { font-size: 0.88rem; line-height: 1.4; }
+  .badge { display: none; justify-self: start; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; padding: 0.1rem 0.5rem; border-radius: 999px; margin-bottom: 2px; }
+  .b-next { background: var(--color-accent-soft); color: var(--color-accent); }
+  .b-done { background: var(--color-success-soft); color: var(--color-success); }
+  .week :global(.go) { flex: none; color: var(--color-muted-foreground); opacity: 0; transform: translateX(-6px); transition: opacity var(--dur-base) var(--ease), transform var(--dur-base) var(--ease-out); }
+  .week:hover :global(.go) { opacity: 1; transform: none; color: var(--color-primary); }
   .toggle {
-    flex: none; display: inline-flex; align-items: center; gap: var(--space-sm); min-height: 44px; padding: 0 0.75rem;
-    border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-surface);
-    color: var(--color-muted-foreground); font: 500 0.85rem var(--font-body); cursor: pointer;
-    transition: background-color 180ms var(--ease), color 180ms var(--ease), border-color 180ms var(--ease);
+    flex: none; align-self: center; margin-right: var(--space-md); width: 44px; height: 44px; border-radius: 12px;
+    display: grid; place-items: center; cursor: pointer; background: var(--color-surface);
+    border: 1.5px solid var(--color-border-strong); color: transparent;
+    transition: background-color var(--dur-base) var(--ease), border-color var(--dur-base) var(--ease), color var(--dur-base) var(--ease);
   }
-  .toggle:hover { border-color: var(--color-border-strong); color: var(--color-foreground); }
-  .box { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--color-border-strong); display: grid; place-items: center; color: transparent; transition: inherit; }
-  .is-done { background: var(--color-success-soft); border-color: transparent; }
+  .toggle:hover { border-color: var(--color-success); color: color-mix(in srgb, var(--color-success) 45%, transparent); }
+  .toggle path { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; }
+
+  .is-next { border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-border)); box-shadow: 0 0 0 4px var(--color-primary-soft), var(--shadow-md); }
+  .is-next::before { background: var(--color-primary); }
+  .is-next .num { color: var(--color-primary); }
+  .is-next .b-next { display: inline-flex; }
+  .is-done { background: color-mix(in srgb, var(--color-success-soft) 60%, var(--color-surface)); }
   .is-done .num { color: var(--color-success); }
-  .is-done .toggle { color: var(--color-success); border-color: transparent; background: transparent; font-weight: 600; }
-  .is-done .box { background: var(--color-success); border-color: var(--color-success); color: var(--color-surface); }
-  .reset { margin-top: var(--space-xl); display: flex; gap: var(--space-md); align-items: center; flex-wrap: wrap; }
-  @media (max-width: 520px) {
-    .week-link { padding: var(--space-md); gap: var(--space-sm); }
-    .toggle [data-label] { display: none; }
-    .toggle { padding: 0 0.7rem; }
+  .is-done .b-done { display: inline-flex; }
+  .is-done .toggle { background: var(--color-success); border-color: var(--color-success); color: var(--color-surface); }
+  .is-done .toggle path { animation: draw 380ms var(--ease-out) both; }
+
+  .reset { margin-top: var(--space-2xl); display: flex; gap: var(--space-md); align-items: center; flex-wrap: wrap; }
+  @media (max-width: 480px) {
+    .week-link { padding: var(--space-md) var(--space-xs) var(--space-md) var(--space-md); gap: var(--space-sm); }
+    .num { font-size: 1.2rem; }
+    .toggle { margin-right: var(--space-sm); }
+    .week :global(.go) { display: none; }
   }
 </style>

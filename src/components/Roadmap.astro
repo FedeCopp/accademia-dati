@@ -1,0 +1,65 @@
+---
+import { getCollection } from 'astro:content';
+import { url } from '../lib/url';
+const phases = (await getCollection('fasi')).sort((a, b) => a.data.numero - b.data.numero);
+---
+<div class="wrap">
+<span class="rail" aria-hidden="true"><span class="rail-fill" data-progress-bar></span></span>
+<ol class="roadmap" data-reveal-group>
+  {phases.map((p) => (
+    <li class="stop" data-phase={p.data.numero}>
+      <a href={url(`/percorso/#fase-${p.data.numero}`)}>
+        <span class="node" aria-hidden="true">{p.data.numero}</span>
+        <span class="when">{p.data.mesi}</span>
+        <span class="title">{p.data.titolo}</span>
+        <span class="state"><span class="s-now">In corso</span><span class="s-later">Dopo</span></span>
+      </a>
+    </li>
+  ))}
+</ol>
+</div>
+<style>
+  .wrap { position: relative; }
+  .roadmap { list-style: none; margin: 0; padding: 0; position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-md); }
+  .rail { position: absolute; z-index: 0; left: 10%; right: 10%; top: 21px; height: 2px; background: var(--color-border); border-radius: 2px; }
+  /* La barra copre la tratta fase 1 → fase 2 in base ai progressi della Fase 1 */
+  .rail-fill { --p: 0; display: block; height: 100%; width: 25%; background: var(--color-primary); transform-origin: left; transform: scaleX(var(--p)); transition: transform 1s var(--ease-out); border-radius: inherit; }
+  .stop { position: relative; }
+  .stop a { display: grid; justify-items: center; text-align: center; gap: 6px; text-decoration: none; color: inherit; padding: 0 4px var(--space-sm); border-radius: var(--radius-md); }
+  .node {
+    width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; position: relative; z-index: 1;
+    font-family: var(--font-mono); font-weight: 600; background: var(--color-surface); border: 2px solid var(--color-border-strong);
+    color: var(--color-muted-foreground); transition: transform var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease), background-color var(--dur-base) var(--ease);
+  }
+  .stop a:hover .node { transform: scale(1.08); border-color: var(--color-primary); }
+  .when { font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-muted-foreground); margin-top: 4px; }
+  .title { font-weight: 600; line-height: 1.3; }
+  .stop a:hover .title { color: var(--color-primary); }
+  .state { font-size: 0.75rem; font-weight: 600; }
+  .s-now { display: none; color: var(--color-accent); }
+  .s-later { color: var(--color-muted-foreground); font-weight: 400; }
+
+  /* fase corrente */
+  :global(:root:not([data-phase1-done='true'])) [data-phase='1'] .node,
+  :global(:root[data-phase1-done='true']) [data-phase='2'] .node {
+    background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary);
+    box-shadow: 0 0 0 6px var(--color-primary-soft);
+  }
+  :global(:root:not([data-phase1-done='true'])) [data-phase='1'] .s-now,
+  :global(:root[data-phase1-done='true']) [data-phase='2'] .s-now { display: inline; }
+  :global(:root:not([data-phase1-done='true'])) [data-phase='1'] .s-later,
+  :global(:root[data-phase1-done='true']) [data-phase='2'] .s-later,
+  :global(:root[data-phase1-done='true']) [data-phase='1'] .s-later { display: none; }
+  :global(:root[data-phase1-done='true']) [data-phase='1'] .node { background: var(--color-success); border-color: var(--color-success); color: var(--color-surface); }
+
+  @media (max-width: 720px) {
+    .roadmap { grid-template-columns: 1fr; gap: 0; }
+    .rail { left: 21px; right: auto; top: 22px; bottom: 22px; width: 2px; height: auto; }
+    .rail-fill { width: 100%; height: 25%; transform-origin: top; transform: scaleY(var(--p)); }
+    .stop a { grid-template-columns: 44px 1fr auto; grid-template-areas: 'n t s' 'n w s'; justify-items: start; text-align: left; column-gap: var(--space-md); row-gap: 0; align-items: center; padding: var(--space-sm) 0; }
+    .node { grid-area: n; }
+    .title { grid-area: t; }
+    .when { grid-area: w; margin: 0; }
+    .state { grid-area: s; }
+  }
+</style>
