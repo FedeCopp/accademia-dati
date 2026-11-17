@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
+import VideoList from '../../components/VideoList.astro';
 import { url, pad, weekSlug } from '../../lib/url';
 
 export async function getStaticPaths() {
@@ -62,6 +63,7 @@ const steps = [
         <section id="studia" class="step" data-step data-reveal>
           <h2 class="step-h"><span class="n">2</span>Cosa studiare</h2>
           <ul class="study">{d.studio.map((s) => <li><Icon name="book" size={18} /><span>{s}</span></li>)}</ul>
+          <VideoList video={d.video} />
           <div class="res">
             <p class="res-h">Risorse</p>
             <ul>

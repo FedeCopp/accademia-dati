@@ -10,6 +10,9 @@ esercizio: "Pulisci un dataset volutamente disordinato e scrivi nel diario ogni 
 risorse:
   - { titolo: "Kaggle Learn, Data Cleaning", url: "https://www.kaggle.com/learn/data-cleaning" }
   - { titolo: "pandas, dati mancanti", url: "https://pandas.pydata.org/docs/user_guide/missing_data.html" }
+video:
+  - { titolo: "Lezione 11: data cleaning in SQL", url: "https://www.youtube.com/watch?v=yxGFmQmJ8U0", autore: "Mirco Miglietta", nota: "la stessa pulizia, fatta in SQL" }
+  - { titolo: "Lezione 9: date e CASE WHEN", url: "https://www.youtube.com/watch?v=Hv-2eJb1r2A", autore: "Mirco Miglietta" }
 ---
 
 
@@ -33,3 +36,24 @@ df = df.dropna(subset=["data", "importo"])
 - I valori mancanti sono casuali o nascondono un problema?
 - Ci sono valori impossibili, come età negative o date future?
 - Le categorie sono scritte sempre allo stesso modo?
+
+## Pulire anche in SQL
+
+Molte pulizie si possono fare direttamente nella query, prima ancora di arrivare a pandas. In azienda capita spesso di avere solo il database.
+
+```sql
+SELECT
+  trim(upper(comune))                              AS comune,
+  CAST(replace(importo, ',', '.') AS DOUBLE)       AS importo,
+  strptime(data, '%d/%m/%Y')::DATE                 AS data,
+  CASE
+    WHEN importo IS NULL  THEN 'mancante'
+    WHEN CAST(replace(importo, ',', '.') AS DOUBLE) > 1000 THEN 'alto'
+    ELSE 'normale'
+  END                                              AS fascia
+FROM read_csv('grezzo.csv', all_varchar = true);  -- tutto come testo: lo converti tu
+```
+
+Con `all_varchar = true` DuckDB non prova a indovinare i tipi: sui dati sporchi è più sicuro leggere tutto come testo e convertire colonna per colonna.
+
+`CASE WHEN` è l'equivalente SQL di un `if`: serve per creare categorie, correggere valori e gestire i casi particolari.

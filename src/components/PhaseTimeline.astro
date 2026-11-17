@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Icon from './Icon.astro';
+import VideoList from './VideoList.astro';
 import { url } from '../lib/url';
 
 interface Props { detailed?: boolean }
@@ -25,6 +26,7 @@ const icons = ['terminal', 'database', 'presentation', 'shield', 'flag'] as cons
           {p.data.strumenti.map((s) => <li class="chip">{s}</li>)}
         </ul>
         <p class="project"><b>Progetto</b> {p.data.progetto}</p>
+        {detailed && p.data.video.length > 0 && <VideoList video={p.data.video} />}
         {detailed && (
           <div class="detail prose">
             <Content />

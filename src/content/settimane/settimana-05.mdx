@@ -10,6 +10,10 @@ esercizio: "Con DuckDB apri il tuo CSV con SELECT * FROM 'file.csv' e scrivi 10 
 risorse:
   - { titolo: "SQLBolt", url: "https://sqlbolt.com/" }
   - { titolo: "DuckDB, installazione", url: "https://duckdb.org/docs/installation/" }
+video:
+  - { titolo: "Corso SQL per Data Analyst, lezione 1: Introduzione", url: "https://www.youtube.com/watch?v=nMBPwuZQeIk", autore: "Mirco Miglietta", nota: "inizio della playlist di 17 video" }
+  - { titolo: "Lezione 3: SELECT, TOP, ORDER BY", url: "https://www.youtube.com/watch?v=5BXPGIBE9GM", autore: "Mirco Miglietta", nota: "usa SQL Server: TOP equivale a LIMIT" }
+  - { titolo: "Lezione 4: WHERE, colonne derivate, AND e OR", url: "https://www.youtube.com/watch?v=kH8aPC1de_o", autore: "Mirco Miglietta" }
 ---
 
 
@@ -32,3 +36,30 @@ Non devi installare un server né importare nulla: punti un file CSV o Parquet e
 - Quali sono i 10 valori più alti di una colonna numerica?
 - Quante righe soddisfano una certa condizione?
 - Quali righe hanno un valore mancante (`IS NULL`)?
+
+## Colonne calcolate e condizioni combinate
+
+Puoi creare colonne nuove direttamente nella query, dando loro un nome con `AS`. Quando combini `AND` e `OR`, usa sempre le parentesi: `AND` viene valutato prima di `OR`, e senza parentesi la query fa qualcosa di diverso da quello che pensi.
+
+```sql
+SELECT comune,
+       popolazione,
+       superficie_km2,
+       popolazione / superficie_km2 AS densita      -- colonna calcolata
+FROM 'comuni.csv'
+WHERE regione = 'Puglia'
+  AND (popolazione > 50000 OR superficie_km2 > 300); -- parentesi!
+```
+
+## Dialetti SQL: se un video usa SQL Server
+
+Il linguaggio è lo stesso ovunque, ma ogni database ha qualche parola sua. I video consigliati usano SQL Server, qui usi DuckDB:
+
+| Cosa vuoi fare | SQL Server | DuckDB e PostgreSQL |
+| --- | --- | --- |
+| Prime 10 righe | `SELECT TOP 10 ...` | `... LIMIT 10` |
+| Data di oggi | `GETDATE()` | `current_date` |
+| Unire testi | `nome + ' ' + cognome` | `nome \|\| ' ' \|\| cognome` |
+| Nomi con spazi | `[nome colonna]` | `"nome colonna"` |
+
+Se una query dei video non funziona, quasi sempre la differenza è in questa tabella.

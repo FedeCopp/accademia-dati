@@ -12,6 +12,11 @@ risorse:
   - { titolo: "SQLBolt", url: "https://sqlbolt.com/" }
   - { titolo: "Mode SQL Tutorial", url: "https://mode.com/sql-tutorial/" }
   - { titolo: "ISTAT, codici dei comuni", url: "https://www.istat.it/classificazione/codici-dei-comuni-delle-province-e-delle-regioni/" }
+video:
+  - { titolo: "Lezione 5: le JOIN, teoria", url: "https://www.youtube.com/watch?v=ot5kRp5yAug", autore: "Mirco Miglietta" }
+  - { titolo: "Lezione 6: i tipi di JOIN", url: "https://www.youtube.com/watch?v=lM70DQ39I1w", autore: "Mirco Miglietta" }
+  - { titolo: "Lezione 7: le funzioni di aggregazione", url: "https://www.youtube.com/watch?v=GXZqGu6wcHI", autore: "Mirco Miglietta" }
+  - { titolo: "Lezione 8: GROUP BY, HAVING e DISTINCT", url: "https://www.youtube.com/watch?v=uuMy5Ic1CFw", autore: "Mirco Miglietta" }
 ---
 
 
@@ -33,3 +38,26 @@ ORDER BY scuole DESC;
 ## La chiave giusta
 
 Collega le tabelle con un **codice**, mai con un nome. "Reggio Emilia" e "Reggio nell'Emilia" sono lo stesso comune, ma il codice ISTAT è uno solo.
+
+## DISTINCT e il conteggio dei valori unici
+
+`DISTINCT` toglie le righe duplicate dal risultato. Dentro un conteggio, `COUNT(DISTINCT colonna)` conta quanti valori diversi ci sono.
+
+```sql
+SELECT regione,
+       COUNT(*)                  AS righe,
+       COUNT(DISTINCT provincia) AS province
+FROM 'comuni.csv'
+GROUP BY regione;
+```
+
+## L'errore più comune con le JOIN
+
+Se nella seconda tabella la chiave compare più volte, ogni riga della prima viene duplicata e i totali crescono senza motivo. Prima di una JOIN controlla che la chiave sia unica:
+
+```sql
+SELECT codice_istat, COUNT(*) AS n
+FROM 'scuole.csv'
+GROUP BY codice_istat
+HAVING COUNT(*) > 1;   -- se esce qualcosa, aggrega prima di unire
+```

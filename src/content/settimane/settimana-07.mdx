@@ -10,6 +10,11 @@ esercizio: "Su un dataset con date, calcola la variazione mese su mese e la clas
 risorse:
   - { titolo: "Mode, window function", url: "https://mode.com/sql-tutorial/sql-window-functions/" }
   - { titolo: "DuckDB, window function", url: "https://duckdb.org/docs/sql/functions/window_functions" }
+video:
+  - { titolo: "Lezione 10: subquery e CTE", url: "https://www.youtube.com/watch?v=dwWq0l3IoaU", autore: "Mirco Miglietta" }
+  - { titolo: "Le funzioni finestra in SQL", url: "https://www.youtube.com/watch?v=Nv9HgnY_dAw", autore: "Mirco Miglietta" }
+  - { titolo: "Come scrivere una query complessa in 5 passi", url: "https://www.youtube.com/watch?v=wxeCNNIY5zM", autore: "Mirco Miglietta" }
+  - { titolo: "Lezione 12: confrontare le righe della stessa tabella", url: "https://www.youtube.com/watch?v=1_CRerIeFZc", autore: "Mirco Miglietta" }
 ---
 
 
@@ -40,3 +45,25 @@ ORDER BY mese;
 | `RANK()` | classifiche con eventuali pari merito |
 | `LAG()` / `LEAD()` | confrontare con la riga precedente o successiva |
 | `SUM() OVER` | totali progressivi e medie mobili |
+
+## Un metodo per le query complesse
+
+Davanti a una domanda difficile non scrivere tutto in una volta. Procedi per passi, una CTE per ciascuno, e controlla il risultato a ogni passo:
+
+1. Scrivi la domanda in italiano, con l'unità di misura (per mese? per cliente?).
+2. Elenca le tabelle che servono e le chiavi che le collegano.
+3. Filtra le righe che ti interessano.
+4. Calcola le aggregazioni.
+5. Aggiungi classifiche o confronti con le window function.
+
+## Confrontare righe della stessa tabella
+
+Per confrontare una riga con la precedente usa `LAG`. Per confronti più liberi puoi unire la tabella con sé stessa (self-join), dandole due alias:
+
+```sql
+-- Prezzo di oggi contro quello di sette giorni prima
+SELECT oggi.data, oggi.prezzo, prima.prezzo AS prezzo_7gg_fa
+FROM 'prezzi.csv' AS oggi
+LEFT JOIN 'prezzi.csv' AS prima
+       ON prima.data = oggi.data - INTERVAL 7 DAY;
+```

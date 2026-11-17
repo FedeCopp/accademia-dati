@@ -3,6 +3,13 @@ import { glob, file } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 const risorsa = z.object({ titolo: z.string(), url: z.url() });
+/** Video consigliati in italiano, collegati a YouTube (niente iframe). */
+const video = z.object({
+  titolo: z.string(),
+  url: z.url().refine((u) => /^https:\/\/(www\.)?youtube\.com\/(watch\?v=|playlist\?list=)/.test(u), 'URL YouTube non valido'),
+  autore: z.string(),
+  nota: z.string().optional(),
+});
 
 const fasi = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/fasi' }),
@@ -14,6 +21,7 @@ const fasi = defineCollection({
     strumenti: z.array(z.string()),
     progetto: z.string(),
     risorse: z.array(risorsa).default([]),
+    video: z.array(video).default([]),
   }),
 });
 
@@ -27,6 +35,7 @@ const settimane = defineCollection({
     studio: z.array(z.string()),
     esercizio: z.string(),
     risorse: z.array(risorsa),
+    video: z.array(video).default([]),
     fatto: z.array(z.string()).optional(),
   }),
 });

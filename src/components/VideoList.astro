@@ -1,0 +1,39 @@
+---
+import Icon from './Icon.astro';
+interface Video { titolo: string; url: string; autore: string; nota?: string }
+interface Props { video: Video[]; titolo?: string }
+const { video, titolo = 'Video consigliati, in italiano' } = Astro.props;
+---
+{video.length > 0 && (
+  <div class="videos">
+    <p class="v-h"><Icon name="youtube" size={16} /> {titolo}</p>
+    <ul>
+      {video.map((v) => (
+        <li>
+          <a href={v.url} target="_blank" rel="noopener">
+            <span class="play" aria-hidden="true"><Icon name="play" size={14} /></span>
+            <span class="txt">
+              <span class="t">{v.titolo}</span>
+              <span class="meta">{v.autore}{v.nota && <> · {v.nota}</>}</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+<style>
+  .videos { padding: var(--space-md) var(--space-lg); border-radius: var(--radius-lg); border: 1px solid var(--color-border); background: var(--color-surface); }
+  .v-h { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-muted-foreground); margin-bottom: var(--space-sm); }
+  .v-h :global(svg) { color: var(--color-accent); }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  a { display: flex; align-items: center; gap: var(--space-md); padding: 0.55rem 0.5rem; margin-inline: -0.5rem; border-radius: var(--radius-md); text-decoration: none; color: inherit; transition: background-color var(--dur-fast) var(--ease); }
+  a:hover { background: var(--color-muted); }
+  .play { width: 32px; height: 32px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--color-accent-soft); color: var(--color-accent); transition: transform var(--dur-base) var(--ease-out); }
+  a:hover .play { transform: scale(1.08); }
+  .play :global(svg) { margin-left: 2px; fill: currentColor; }
+  .txt { display: grid; min-width: 0; }
+  .t { font-weight: 600; line-height: 1.35; }
+  a:hover .t { color: var(--color-primary); }
+  .meta { font-size: 0.82rem; color: var(--color-muted-foreground); }
+</style>
