@@ -1,0 +1,14 @@
+---
+import { url } from '../lib/url';
+---
+<footer class="site-footer">
+  <div class="container inner">
+    <p><b>Accademia Dati</b> · un percorso di data intelligence da zero, 5–8 ore a settimana.</p>
+    <p class="muted">Le risorse indicate sono gratuite salvo dove specificato. I tuoi progressi restano salvati solo in questo browser.{' '}
+      <a href={url('/come-funziona/')}>Come funziona il sito</a></p>
+  </div>
+</footer>
+<style>
+  .site-footer { border-top: 1px solid var(--color-border); padding-block: var(--space-xl) var(--space-2xl); font-size: 0.9rem; margin-top: var(--space-2xl); }
+  .inner { display: grid; gap: var(--space-sm); }
+</style>

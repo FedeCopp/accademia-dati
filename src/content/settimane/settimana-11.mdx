@@ -1,0 +1,38 @@
+---
+numero: 11
+titolo: Progetto di fase, parte 1
+sottotitolo: Domanda, dati, pulizia
+obiettivo: Scegliere una domanda vera e preparare i dati per rispondere.
+studio:
+  - "Fonti: dati.gov.it, ISTAT, OpenCoesione, open data del tuo comune"
+  - Scrivi la domanda prima di toccare i dati
+esercizio: "Nuovo repository: README con la domanda, script di download e di pulizia, dati puliti salvati."
+risorse:
+  - { titolo: "ISTAT, banche dati", url: "https://www.istat.it/dati/" }
+  - { titolo: "OpenCoesione", url: "https://opencoesione.gov.it/" }
+  - { titolo: "dati.gov.it", url: "https://www.dati.gov.it/" }
+---
+
+## Teoria in breve
+
+Un buon progetto parte da una **domanda specifica**, non da un dataset. "Analizzo i dati sui trasporti" non è una domanda. "Nei capoluoghi del Sud i ritardi dei treni regionali sono aumentati dopo il 2022?" lo è.
+
+## Idee di domande
+
+- Quali province hanno ricevuto più fondi europei per abitante, e per cosa sono stati spesi? (OpenCoesione)
+- Come è cambiata l'età media della popolazione nei comuni della tua regione negli ultimi vent'anni? (ISTAT)
+- Dove sono concentrate le colonnine di ricarica elettrica rispetto alle auto immatricolate? (open data regionali)
+
+## Struttura del repository
+
+```text
+progetto-fase-1/
+├── README.md          domanda, fonti, come eseguire, conclusioni
+├── data/
+│   ├── raw/           dati scaricati, mai modificati a mano
+│   └── clean/         dati puliti dagli script
+├── src/
+│   ├── download.py
+│   └── pulizia.py
+└── analisi.ipynb
+```

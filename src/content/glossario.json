@@ -1,0 +1,107 @@
+[
+  {
+    "id": "api",
+    "termine": "API",
+    "definizione": "Interfaccia che permette a un programma di chiedere dati a un servizio. Molti open data sono disponibili via API."
+  },
+  {
+    "id": "csv",
+    "termine": "CSV",
+    "definizione": "File di testo in cui ogni riga è un record e i valori sono separati da virgole o punti e virgola. Il formato più comune per scambiare dati."
+  },
+  {
+    "id": "cte",
+    "termine": "CTE",
+    "definizione": "Common Table Expression: un risultato intermedio con un nome, scritto con WITH, che rende leggibili le query lunghe."
+  },
+  {
+    "id": "cve",
+    "termine": "CVE",
+    "definizione": "Common Vulnerabilities and Exposures: codice univoco che identifica una vulnerabilità informatica nota, per esempio CVE-2021-44228."
+  },
+  {
+    "id": "dashboard",
+    "termine": "Dashboard",
+    "definizione": "Pagina con grafici e numeri aggiornati che risponde a domande ricorrenti."
+  },
+  {
+    "id": "data-warehouse",
+    "termine": "Data warehouse",
+    "definizione": "Database pensato per l'analisi, dove confluiscono dati da fonti diverse. Esempi: BigQuery, Snowflake."
+  },
+  {
+    "id": "dataframe",
+    "termine": "DataFrame",
+    "definizione": "La tabella di pandas: righe e colonne su cui fare filtri, calcoli e aggregazioni in Python."
+  },
+  {
+    "id": "dbt",
+    "termine": "dbt",
+    "definizione": "Strumento che permette di scrivere le trasformazioni dei dati in SQL, con test e documentazione."
+  },
+  {
+    "id": "duckdb",
+    "termine": "DuckDB",
+    "definizione": "Database analitico che gira sul tuo computer senza installare un server. Legge CSV e Parquet direttamente."
+  },
+  {
+    "id": "etl-elt",
+    "termine": "ETL / ELT",
+    "definizione": "Extract, Transform, Load: estrarre i dati, trasformarli e caricarli in un database. In ELT si carica prima e si trasforma dopo."
+  },
+  {
+    "id": "git",
+    "termine": "Git",
+    "definizione": "Sistema che tiene traccia di ogni modifica ai tuoi file. GitHub è il sito dove pubblicare i repository."
+  },
+  {
+    "id": "join",
+    "termine": "JOIN",
+    "definizione": "Operazione SQL che collega due tabelle tramite una colonna in comune, per esempio il codice ISTAT del comune."
+  },
+  {
+    "id": "mitre-att-ck",
+    "termine": "MITRE ATT&CK",
+    "definizione": "Catalogo pubblico delle tecniche usate dagli attaccanti, usato per classificare minacce ed eventi di sicurezza."
+  },
+  {
+    "id": "osint",
+    "termine": "OSINT",
+    "definizione": "Open Source Intelligence: raccolta e analisi di informazioni da fonti pubbliche."
+  },
+  {
+    "id": "overfitting",
+    "termine": "Overfitting",
+    "definizione": "Quando un modello impara a memoria i dati di addestramento e sbaglia su dati nuovi."
+  },
+  {
+    "id": "parquet",
+    "termine": "Parquet",
+    "definizione": "Formato di file a colonne, compresso e veloce da leggere. Lo standard per i dati analitici."
+  },
+  {
+    "id": "pipeline",
+    "termine": "Pipeline",
+    "definizione": "Sequenza automatica di passaggi che porta i dati dalla fonte al risultato finale."
+  },
+  {
+    "id": "schema-a-stella",
+    "termine": "Schema a stella",
+    "definizione": "Modo di organizzare un database con una tabella centrale di fatti (es. vendite) e tabelle di dimensioni intorno (date, prodotti, negozi)."
+  },
+  {
+    "id": "soc",
+    "termine": "SOC",
+    "definizione": "Security Operations Center: il team che monitora log ed eventi per individuare attacchi."
+  },
+  {
+    "id": "sql",
+    "termine": "SQL",
+    "definizione": "Linguaggio per interrogare database: descrivi il risultato che vuoi, il database decide come trovarlo."
+  },
+  {
+    "id": "window-function",
+    "termine": "Window function",
+    "definizione": "Calcolo SQL su un gruppo di righe vicine senza ridurle a una sola: classifiche, totali progressivi, confronto con il mese prima."
+  }
+]

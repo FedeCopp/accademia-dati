@@ -1,0 +1,36 @@
+---
+numero: 6
+titolo: SQL, parte 2
+sottotitolo: GROUP BY, aggregazioni, HAVING, JOIN
+obiettivo: Riassumere i dati e collegare tabelle diverse.
+studio:
+  - SQLBolt, lezioni da 6 a 12
+  - "COUNT, SUM, AVG e la differenza tra WHERE e HAVING"
+  - "INNER JOIN e LEFT JOIN, con un disegno su carta"
+esercizio: "Trova due dataset collegabili (per esempio popolazione e servizi per comune) e rispondi a 5 domande che richiedono una JOIN."
+risorse:
+  - { titolo: "SQLBolt", url: "https://sqlbolt.com/" }
+  - { titolo: "Mode SQL Tutorial", url: "https://mode.com/sql-tutorial/" }
+  - { titolo: "ISTAT, codici dei comuni", url: "https://www.istat.it/classificazione/codici-dei-comuni-delle-province-e-delle-regioni/" }
+---
+
+## Teoria in breve
+
+`GROUP BY` raggruppa le righe con lo stesso valore e ti permette di calcolare un totale per gruppo. `WHERE` filtra **prima** di raggruppare, `HAVING` filtra **dopo**.
+
+Una **JOIN** collega due tabelle attraverso una colonna in comune. Con `INNER JOIN` tieni solo le righe che trovano corrispondenza; con `LEFT JOIN` tieni tutte quelle della prima tabella.
+
+```sql
+SELECT p.regione,
+       COUNT(*)             AS comuni,
+       SUM(s.num_scuole)    AS scuole
+FROM 'popolazione.csv' AS p
+LEFT JOIN 'scuole.csv' AS s ON s.codice_istat = p.codice_istat
+GROUP BY p.regione
+HAVING COUNT(*) > 100
+ORDER BY scuole DESC;
+```
+
+## La chiave giusta
+
+Collega le tabelle con un **codice**, mai con un nome. "Reggio Emilia" e "Reggio nell'Emilia" sono lo stesso comune, ma il codice ISTAT è uno solo.

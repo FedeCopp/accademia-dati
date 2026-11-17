@@ -1,0 +1,36 @@
+---
+numero: 2
+titolo: Python base, parte 1
+sottotitolo: Variabili, tipi, liste, dizionari, cicli
+obiettivo: Leggere e scrivere script semplici senza bloccarti sulla sintassi.
+studio:
+  - "CS50P: lezioni 0, 1 e 2 (funzioni, condizioni, cicli)"
+  - "Liste e dizionari: quando usare l'una o l'altro"
+esercizio: "Script che, data una lista di spese (categoria, importo), stampa il totale per categoria e la categoria più costosa."
+risorse:
+  - { titolo: "CS50's Introduction to Python", url: "https://cs50.harvard.edu/python/" }
+  - { titolo: "Tutorial ufficiale di Python", url: "https://docs.python.org/3/tutorial/" }
+---
+
+## Teoria in breve
+
+Una **lista** è una sequenza ordinata: `[3, 7, 12]`. Un **dizionario** associa chiavi a valori: è il modo più naturale per raggruppare.
+
+Il ciclo `for` ripete un blocco di codice per ogni elemento. Combinando cicli e dizionari puoi già fare quello che in un foglio Excel faresti con una tabella pivot.
+
+```python
+spese = [("cibo", 12.5), ("trasporti", 3.0), ("cibo", 8.0), ("svago", 20.0)]
+
+totali = {}
+for categoria, importo in spese:
+    totali[categoria] = totali.get(categoria, 0) + importo
+
+print(totali)                        # {'cibo': 20.5, 'trasporti': 3.0, 'svago': 20.0}
+print(max(totali, key=totali.get))   # cibo
+```
+
+## Errori comuni
+
+- Dimenticare i due punti dopo `for` e `if`, o sbagliare l'indentazione.
+- Confondere `=` (assegnazione) con `==` (confronto).
+- Modificare una lista mentre la scorri con un ciclo.

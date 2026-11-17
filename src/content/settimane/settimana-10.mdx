@@ -1,0 +1,42 @@
+---
+numero: 10
+titolo: Visualizzare
+sottotitolo: Il grafico giusto per ogni domanda
+obiettivo: Scegliere e costruire grafici che si leggono in cinque secondi.
+studio:
+  - "Kaggle Learn: corso Data Visualization"
+  - "Barre per i confronti, linee per il tempo, dispersione per le relazioni"
+esercizio: "Tre grafici sul dataset pulito, ognuno con un titolo che dice la conclusione: non «Grafico vendite» ma «Le vendite calano da marzo»."
+risorse:
+  - { titolo: "Kaggle Learn, Data Visualization", url: "https://www.kaggle.com/learn/data-visualization" }
+  - { titolo: "From Data to Viz", url: "https://www.data-to-viz.com/" }
+  - { titolo: "Matplotlib, galleria", url: "https://matplotlib.org/stable/gallery/index.html" }
+---
+
+## Teoria in breve
+
+Un grafico è una risposta a una domanda. Prima scegli la domanda, poi la forma.
+
+| Domanda | Grafico |
+| --- | --- |
+| Chi è più grande? | barre orizzontali, ordinate |
+| Come cambia nel tempo? | linea |
+| C'è una relazione tra due misure? | dispersione |
+| Come si distribuiscono i valori? | istogramma |
+
+```python
+import matplotlib.pyplot as plt
+
+ax = df.groupby("mese")["totale"].sum().plot(kind="line", color="#0f766e")
+ax.set_title("Le vendite calano da marzo")
+ax.set_ylabel("Euro")
+ax.spines[["top", "right"]].set_visible(False)
+plt.tight_layout()
+plt.savefig("vendite.png", dpi=150)
+```
+
+## Regole che valgono sempre
+
+- Le barre partono da zero.
+- Niente torte con più di tre fette e niente 3D.
+- Un solo colore forte, per la cosa che vuoi far notare.

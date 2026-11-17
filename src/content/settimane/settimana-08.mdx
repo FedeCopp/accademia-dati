@@ -1,0 +1,39 @@
+---
+numero: 8
+titolo: pandas, parte 1
+sottotitolo: DataFrame, filtri, groupby
+obiettivo: Fare in Python le stesse cose che fai in SQL.
+studio:
+  - "Kaggle Learn: corso Pandas"
+  - "La guida ufficiale 10 minutes to pandas"
+esercizio: "Rifai in pandas 5 delle query SQL della settimana 6 e controlla che i risultati coincidano."
+risorse:
+  - { titolo: "Kaggle Learn, Pandas", url: "https://www.kaggle.com/learn/pandas" }
+  - { titolo: "10 minutes to pandas", url: "https://pandas.pydata.org/docs/user_guide/10min.html" }
+  - { titolo: "pandas, confronto con SQL", url: "https://pandas.pydata.org/docs/getting_started/comparison/comparison_with_sql.html" }
+---
+
+## Teoria in breve
+
+Un **DataFrame** è una tabella in memoria: colonne con un nome e un tipo, righe con un indice. Quasi ogni operazione SQL ha un equivalente in pandas.
+
+| SQL | pandas |
+| --- | --- |
+| `WHERE regione = 'Lazio'` | `df[df["regione"] == "Lazio"]` |
+| `GROUP BY regione` + `SUM` | `df.groupby("regione")["valore"].sum()` |
+| `ORDER BY valore DESC` | `df.sort_values("valore", ascending=False)` |
+| `JOIN` | `df.merge(altro, on="codice")` |
+
+```python
+import pandas as pd
+
+df = pd.read_csv("comuni.csv", sep=";", decimal=",")
+top = (df[df["regione"] == "Lombardia"]
+         .sort_values("popolazione", ascending=False)
+         .head(10))
+print(top[["comune", "popolazione"]])
+```
+
+## SQL o pandas?
+
+Entrambi. SQL è perfetto per interrogare database grandi. pandas serve quando devi combinare l'analisi con altro codice Python: grafici, chiamate a un'API, modelli.

@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import Icon from './Icon.astro';
+import { url } from '../lib/url';
+
+const weeks = (await getCollection('settimane')).sort((a, b) => a.data.numero - b.data.numero);
+const titles = Object.fromEntries(weeks.map((w) => [w.data.numero, w.data.titolo]));
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<div class="progress card" aria-live="polite">
+  <div class="row">
+    <span class="eyebrow">Fase 1 · i tuoi progressi</span>
+    <span class="count" data-progress-count>0 / 12</span>
+  </div>
+  <div class="track" role="progressbar" aria-label="Settimane completate" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0" data-progress-meter>
+    <span class="fill" data-progress-bar></span>
+  </div>
+  <div class="next">
+    <span class="muted">Prossima lezione</span>
+    <a href={url('/fase-1/settimana-01/')} data-next-week data-base={base} data-titles={JSON.stringify(titles)}>
+      <span data-label>Settimana 1: {titles[1]}</span>
+      <Icon name="arrow-right" size={18} />
+    </a>
+  </div>
+</div>
+<style>
+  .progress { padding: var(--space-lg); display: grid; gap: var(--space-md); box-shadow: var(--shadow-md); }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-md); }
+  .count { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .track { height: 10px; border-radius: 999px; background: var(--color-muted); overflow: hidden; }
+  .fill { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); transition: width 400ms var(--ease); }
+  .next { display: grid; gap: 2px; }
+  .next .muted { font-size: 0.85rem; }
+  .next a { display: inline-flex; align-items: center; gap: var(--space-sm); font-weight: 600; text-decoration: none; min-height: 44px; }
+  .next a:hover { text-decoration: underline; }
+  .next a :global(svg) { transition: transform 180ms var(--ease); }
+  .next a:hover :global(svg) { transform: translateX(3px); }
+</style>

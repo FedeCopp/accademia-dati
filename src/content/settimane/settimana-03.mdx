@@ -1,0 +1,36 @@
+---
+numero: 3
+titolo: Python base, parte 2
+sottotitolo: Funzioni, file, CSV, gestione errori
+obiettivo: Leggere un file di dati reale e produrre un piccolo report.
+studio:
+  - "CS50P: lezioni 3 e 6 (eccezioni, lettura e scrittura di file)"
+  - Il modulo csv della libreria standard
+esercizio: "Scarica un CSV da dati.gov.it, leggilo con il modulo csv e scrivi un file report.txt con numero di righe, nomi delle colonne e tre statistiche."
+risorse:
+  - { titolo: "CS50P", url: "https://cs50.harvard.edu/python/" }
+  - { titolo: "dati.gov.it, catalogo open data", url: "https://www.dati.gov.it/view-dataset" }
+  - { titolo: "Modulo csv, documentazione", url: "https://docs.python.org/3/library/csv.html" }
+---
+
+## Teoria in breve
+
+Una **funzione** dà un nome a un pezzo di logica, così puoi riusarla e testarla. Un file **CSV** è una tabella salvata come testo: ogni riga un record, i valori separati da virgole (o, nei dati italiani, spesso da punto e virgola).
+
+```python
+import csv
+
+def leggi(percorso):
+    with open(percorso, encoding="utf-8") as f:
+        return list(csv.DictReader(f, delimiter=";"))
+
+righe = leggi("dataset.csv")
+print(len(righe), "righe")
+print("Colonne:", list(righe[0].keys()))
+```
+
+## Attenzione ai dati italiani
+
+- Il separatore è spesso `;` e i decimali usano la virgola: `"3,5"` va convertito con `float("3,5".replace(",", "."))`.
+- Alcuni file usano la codifica `latin-1` invece di `utf-8`. Se vedi caratteri strani nelle lettere accentate, prova a cambiarla.
+- Usa `try` ed `except` per gestire le righe con valori mancanti invece di far fallire tutto lo script.

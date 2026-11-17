@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+<Base title="Pagina non trovata" description="La pagina che cerchi non esiste.">
+  <section class="section">
+    <div class="container prose">
+      <span class="eyebrow">Errore 404</span>
+      <h1>Questa pagina non esiste</h1>
+      <p>Forse il link è vecchio o c'è un errore di battitura. Riparti dal <a href={url('/percorso/')}>percorso</a> o dalle <a href={url('/fase-1/')}>lezioni della Fase 1</a>.</p>
+    </div>
+  </section>
+</Base>

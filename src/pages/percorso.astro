@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import PhaseTimeline from '../components/PhaseTimeline.astro';
+---
+<Base title="Il percorso" description="Le cinque fasi del percorso di data intelligence, con argomenti, strumenti, risorse e progetto di ogni fase." current="percorso">
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Il percorso completo · circa 14 mesi</span>
+        <h1>Cinque fasi, un progetto per fase</h1>
+        <p class="lead">I mesi sono indicativi per 5–8 ore a settimana. Se una fase richiede più tempo va bene: conta finire il progetto, non rispettare la data.</p>
+      </div>
+      <PhaseTimeline detailed />
+    </div>
+  </section>
+</Base>

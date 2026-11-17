@@ -1,0 +1,35 @@
+---
+numero: 5
+titolo: SQL, parte 1
+sottotitolo: SELECT, WHERE, ORDER BY, LIMIT
+obiettivo: Interrogare una tabella e filtrare solo quello che ti serve.
+studio:
+  - SQLBolt, lezioni da 1 a 5
+  - Installa DuckDB, che legge i CSV direttamente con SQL
+esercizio: "Con DuckDB apri il tuo CSV con SELECT * FROM 'file.csv' e scrivi 10 query che rispondono a 10 domande diverse."
+risorse:
+  - { titolo: "SQLBolt", url: "https://sqlbolt.com/" }
+  - { titolo: "DuckDB, installazione", url: "https://duckdb.org/docs/installation/" }
+---
+
+## Teoria in breve
+
+SQL è **dichiarativo**: descrivi il risultato che vuoi, non i passaggi per ottenerlo. Una query si legge quasi come una frase.
+
+```sql
+SELECT comune, popolazione        -- quali colonne
+FROM 'comuni.csv'                 -- da quale tabella (DuckDB legge il CSV)
+WHERE regione = 'Lombardia'       -- quali righe
+ORDER BY popolazione DESC         -- in che ordine
+LIMIT 10;                         -- quante
+```
+
+## Perché DuckDB
+
+Non devi installare un server né importare nulla: punti un file CSV o Parquet e lo interroghi. È lo strumento più rapido per esercitarti con SQL su dati veri, ed è usato anche in produzione.
+
+## Domande da cui partire
+
+- Quali sono i 10 valori più alti di una colonna numerica?
+- Quante righe soddisfano una certa condizione?
+- Quali righe hanno un valore mancante (`IS NULL`)?

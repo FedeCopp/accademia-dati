@@ -1,0 +1,81 @@
+---
+import { getCollection, render } from 'astro:content';
+import Icon from './Icon.astro';
+import { url } from '../lib/url';
+
+interface Props { detailed?: boolean }
+const { detailed = false } = Astro.props;
+const phases = (await getCollection('fasi')).sort((a, b) => a.data.numero - b.data.numero);
+const rendered = await Promise.all(phases.map(async (p) => ({ p, Content: (await render(p)).Content })));
+const icons = ['terminal', 'database', 'presentation', 'shield', 'flag'] as const;
+---
+<ol class="timeline">
+  {rendered.map(({ p, Content }, i) => (
+    <li class="phase" id={`fase-${p.data.numero}`} data-phase={p.data.numero}>
+      <div class="marker" aria-hidden="true"><Icon name={icons[i]} size={22} /></div>
+      <div class="body">
+        <div class="meta">
+          <span class="eyebrow">Fase {p.data.numero} · {p.data.mesi}</span>
+          <span class="here here-1">sei qui</span>
+          <span class="here here-2">sei qui</span>
+        </div>
+        <h3>{p.data.titolo}</h3>
+        <p class="muted">{p.data.sintesi}</p>
+        <ul class="tools" aria-label="Strumenti">
+          {p.data.strumenti.map((s) => <li class="chip">{s}</li>)}
+        </ul>
+        <p class="project"><b>Progetto</b> {p.data.progetto}</p>
+        {detailed && (
+          <div class="detail prose">
+            <Content />
+            {p.data.risorse.length > 0 && (
+              <>
+                <h2>Risorse</h2>
+                <ul>
+                  {p.data.risorse.map((r) => (
+                    <li><a href={r.url} target="_blank" rel="noopener">{r.titolo}</a></li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        )}
+        {p.data.numero === 1 && (
+          <a class="btn btn-primary start" href={url('/fase-1/')}>Apri le 12 lezioni <Icon name="arrow-right" /></a>
+        )}
+      </div>
+    </li>
+  ))}
+</ol>
+<style>
+  .timeline { list-style: none; margin: 0; padding: 0; display: grid; }
+  .phase { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: var(--space-lg); position: relative; padding-bottom: var(--space-2xl); }
+  .phase:last-child { padding-bottom: 0; }
+  .phase::before { content: ''; position: absolute; left: 23px; top: 52px; bottom: 4px; width: 2px; background: var(--color-border); }
+  .phase:last-child::before { display: none; }
+  .marker {
+    width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center;
+    background: var(--color-surface); border: 1px solid var(--color-border-strong); color: var(--color-muted-foreground);
+  }
+  .body { display: grid; gap: var(--space-sm); min-width: 0; padding-top: 2px; }
+  .meta { display: flex; gap: var(--space-sm); align-items: center; flex-wrap: wrap; }
+  .here { display: none; font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.1rem 0.5rem; border-radius: 999px; background: var(--color-accent-soft); color: var(--color-accent); font-weight: 600; }
+  h3 { font-size: 1.35rem; }
+  .tools { list-style: none; padding: 0; margin: var(--space-xs) 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .project { border-left: 3px solid var(--color-accent-fill); padding: 0.6rem 0.9rem; background: var(--color-accent-soft); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 0.95rem; max-width: var(--measure); }
+  .project b { color: var(--color-accent); margin-right: 0.35rem; font-family: var(--font-mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .detail { margin-top: var(--space-sm); }
+  .start { justify-self: start; margin-top: var(--space-sm); }
+
+  /* Fase corrente: 1 finché la Fase 1 non è completa, poi 2 (vedi progress.ts) */
+  :global(:root:not([data-phase1-done='true'])) [data-phase='1'] .marker,
+  :global(:root[data-phase1-done='true']) [data-phase='2'] .marker { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary); }
+  :global(:root:not([data-phase1-done='true'])) [data-phase='1'] .here-1,
+  :global(:root[data-phase1-done='true']) [data-phase='2'] .here-2 { display: inline-block; }
+
+  @media (max-width: 560px) {
+    .phase { grid-template-columns: 40px minmax(0, 1fr); gap: var(--space-md); }
+    .marker { width: 40px; height: 40px; border-radius: 10px; }
+    .phase::before { left: 19px; top: 44px; }
+  }
+</style>

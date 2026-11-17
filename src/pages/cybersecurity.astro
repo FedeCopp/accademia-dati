@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+const blocks = [
+  { t: 'Fondamenta di sicurezza', d: 'Reti (TCP/IP, DNS, HTTP), Linux, come funzionano gli attacchi più comuni. Pratica guidata su TryHackMe: prima il percorso Pre Security, poi SOC Level 1.', r: [['TryHackMe, Pre Security', 'https://tryhackme.com/path/outline/presecurity']] },
+  { t: 'Log come dati', d: 'I log di server e firewall sono tabelle enormi. Le stesse query SQL e pandas della Fase 1 servono a trovare accessi sospetti e anomalie.', r: [['Elastic, guida introduttiva ai log', 'https://www.elastic.co/guide/en/observability/current/logs-checklist.html']] },
+  { t: 'Threat intelligence', d: 'Raccogliere feed di vulnerabilità (CVE) e indicatori, normalizzarli e collegarli alle tecniche del framework MITRE ATT&CK. È il progetto della Fase 4.', r: [['MITRE ATT&CK', 'https://attack.mitre.org/'], ['CISA, KEV catalog', 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog']] },
+  { t: 'Certificazione, se serve', d: 'CompTIA Security+ è il riferimento d\'ingresso più riconosciuto. Ha senso solo se vuoi cercare lavoro in questo campo.', r: [['CompTIA Security+', 'https://www.comptia.org/certifications/security']] },
+];
+---
+<Base title="Cybersecurity" description="Il ponte tra data intelligence e cybersecurity: security data, log e threat intelligence." current="cybersecurity">
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Specializzazione opzionale</span>
+        <h1>Il ponte verso la cybersecurity</h1>
+        <p class="lead">Se dopo la Fase 3 la sicurezza ti incuriosisce ancora, questa è la strada che unisce le due cose: security data e threat intelligence.</p>
+      </div>
+      <div class="flow" aria-label="Dalle competenze sui dati alla sicurezza">
+        <div><span class="eyebrow">Hai già</span><p>Python · SQL · Linux · pipeline · dashboard</p></div>
+        <Icon name="arrow-right" size={22} />
+        <div><span class="eyebrow">Aggiungi</span><p>Reti · log · ATT&amp;CK · feed CVE</p></div>
+        <Icon name="arrow-right" size={22} />
+        <div class="end"><span class="eyebrow">Diventi</span><p>Analista SOC / threat intelligence</p></div>
+      </div>
+      <div class="grid">
+        {blocks.map((b) => (
+          <article class="card item">
+            <h2>{b.t}</h2>
+            <p class="muted">{b.d}</p>
+            <ul>{b.r.map(([t, u]) => <li><a href={u} target="_blank" rel="noopener">{t}</a></li>)}</ul>
+          </article>
+        ))}
+      </div>
+      <p class="note"><Icon name="shield" size={18} /> Pratica solo su ambienti creati per esercitarsi (TryHackMe, OverTheWire, laboratori tuoi). Fare test su sistemi altrui senza autorizzazione è illegale.</p>
+    </div>
+  </section>
+</Base>
+<style>
+  .flow { display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap; margin-bottom: var(--space-2xl); }
+  .flow > div { flex: 1 1 200px; padding: var(--space-md) var(--space-lg); border-radius: var(--radius-md); background: var(--color-muted); display: grid; gap: 2px; }
+  .flow > div p { font-family: var(--font-mono); font-size: 0.9rem; }
+  .flow .end { background: var(--color-primary-soft); }
+  .flow > :global(svg) { color: var(--color-muted-foreground); flex: none; }
+  @media (max-width: 700px) { .flow > :global(svg) { transform: rotate(90deg); margin-inline: auto; } .flow { flex-direction: column; align-items: stretch; } }
+  .grid { display: grid; gap: var(--space-md); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .item { padding: var(--space-lg); display: grid; gap: var(--space-sm); align-content: start; border-top: 3px solid var(--color-primary); }
+  .item h2 { font-size: 1.15rem; }
+  .item ul { margin: 0; padding-left: 1.1rem; }
+  .note { display: flex; gap: var(--space-sm); align-items: flex-start; margin-top: var(--space-xl); color: var(--color-muted-foreground); font-size: 0.92rem; max-width: var(--measure); }
+  .note :global(svg) { flex: none; margin-top: 2px; color: var(--color-accent); }
+</style>

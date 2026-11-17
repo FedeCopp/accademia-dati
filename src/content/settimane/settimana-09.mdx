@@ -1,0 +1,36 @@
+---
+numero: 9
+titolo: pandas, parte 2
+sottotitolo: Pulizia di valori mancanti, tipi, date, duplicati e merge
+obiettivo: Prendere un dataset sporco e renderlo affidabile. È l'80% del lavoro reale.
+studio:
+  - "Kaggle Learn: corso Data Cleaning"
+  - "isna, fillna, astype, to_datetime, drop_duplicates, merge"
+esercizio: "Pulisci un dataset volutamente disordinato e scrivi nel diario ogni scelta che hai fatto e perché."
+risorse:
+  - { titolo: "Kaggle Learn, Data Cleaning", url: "https://www.kaggle.com/learn/data-cleaning" }
+  - { titolo: "pandas, dati mancanti", url: "https://pandas.pydata.org/docs/user_guide/missing_data.html" }
+---
+
+## Teoria in breve
+
+Pulire non vuol dire rendere i dati belli, vuol dire renderli **affidabili** e **documentare** ogni decisione. Ogni scelta (eliminare una riga, riempire un valore) cambia il risultato dell'analisi.
+
+```python
+df = pd.read_csv("grezzo.csv", sep=";")
+
+print(df.isna().sum())                       # quanti valori mancanti per colonna
+df = df.drop_duplicates()
+df["data"] = pd.to_datetime(df["data"], dayfirst=True, errors="coerce")
+df["importo"] = pd.to_numeric(df["importo"].str.replace(",", "."), errors="coerce")
+df["comune"] = df["comune"].str.strip().str.title()
+df = df.dropna(subset=["data", "importo"])
+```
+
+## Checklist di pulizia
+
+- Le colonne hanno il tipo giusto (numeri come numeri, date come date)?
+- Ci sono duplicati esatti o quasi duplicati?
+- I valori mancanti sono casuali o nascondono un problema?
+- Ci sono valori impossibili, come età negative o date future?
+- Le categorie sono scritte sempre allo stesso modo?

@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { url } from '../lib/url';
+const phases = (await getCollection('fasi')).sort((a, b) => a.data.numero - b.data.numero);
+---
+<Base title="Progetti" description="I cinque progetti del percorso, uno per fase: il portfolio che dimostra cosa sai fare." current="progetti">
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Il tuo portfolio</span>
+        <h1>Cinque progetti, uno per fase</h1>
+        <p class="lead">Ogni progetto si costruisce su quello precedente. Alla fine hai una storia coerente da mostrare: dai dati grezzi alla dashboard, fino all'intelligence sulle minacce.</p>
+      </div>
+      <ol class="projects">
+        {phases.map((p) => (
+          <li class="card proj">
+            <div class="top"><span class="eyebrow">Fase {p.data.numero} · {p.data.mesi}</span><span class="chip">da fare</span></div>
+            <h2>{p.data.titolo}</h2>
+            <p>{p.data.progetto}</p>
+            <a href={url(`/percorso/#fase-${p.data.numero}`)}>Dettagli e criteri <Icon name="arrow-right" size={16} /></a>
+          </li>
+        ))}
+      </ol>
+      <div class="tip">
+        <Icon name="github" size={22} />
+        <p><b>Come pubblicarli.</b> Un repository per progetto, con un README che contiene la domanda, la risposta e come riprodurre il lavoro. Fissa i migliori in alto nel tuo profilo GitHub.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .projects { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-md); grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .proj { padding: var(--space-lg); display: grid; gap: var(--space-sm); align-content: start; }
+  .proj h2 { font-size: 1.2rem; }
+  .proj a { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; min-height: 44px; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: var(--space-sm); }
+  .tip { display: flex; gap: var(--space-md); margin-top: var(--space-2xl); padding: var(--space-lg); border-radius: var(--radius-lg); background: var(--color-muted); max-width: var(--measure); }
+  .tip :global(svg) { flex: none; color: var(--color-primary); }
+</style>

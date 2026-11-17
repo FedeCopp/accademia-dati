@@ -1,0 +1,145 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { url, pad, weekSlug } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const weeks = (await getCollection('settimane')).sort((a, b) => a.data.numero - b.data.numero);
+  return weeks.map((w, i) => ({
+    params: { slug: weekSlug(w.data.numero) },
+    props: { week: w, prev: weeks[i - 1], next: weeks[i + 1] },
+  }));
+}
+
+const { week, prev, next } = Astro.props;
+const { Content } = await render(week);
+const d = week.data;
+const mese = Math.ceil(d.numero / 4);
+---
+<Base title={`Settimana ${d.numero}: ${d.titolo}`} description={d.obiettivo} current="fase-1">
+  <article class="section" data-week-state={d.numero}>
+    <div class="container">
+      <nav class="crumbs" aria-label="Percorso di navigazione">
+        <a href={url('/percorso/')}>Percorso</a><span aria-hidden="true">/</span>
+        <a href={url('/fase-1/')}>Fase 1</a><span aria-hidden="true">/</span>
+        <span aria-current="page">Settimana {d.numero}</span>
+      </nav>
+
+      <header class="head">
+        <span class="eyebrow">Settimana {pad(d.numero)} di 12 · mese {mese}</span>
+        <h1>{d.titolo}</h1>
+        <p class="lead">{d.sottotitolo}</p>
+        <div class="weekbar" aria-hidden="true">
+          {Array.from({ length: 12 }, (_, i) => <span class:list={['seg', { cur: i + 1 === d.numero }]} data-week-state={i + 1} />)}
+        </div>
+      </header>
+
+      <div class="grid">
+        <div class="main">
+          <section class="goal card">
+            <Icon name="target" size={22} />
+            <div><h2 class="label">Obiettivo</h2><p>{d.obiettivo}</p></div>
+          </section>
+
+          <section class="block">
+            <h2 class="label">Cosa studiare</h2>
+            <ul class="study">{d.studio.map((s) => <li><Icon name="book" size={18} /><span>{s}</span></li>)}</ul>
+          </section>
+
+          <div class="prose"><Content /></div>
+
+          <section class="exercise">
+            <h2 class="label"><Icon name="pencil" size={18} /> Esercizio della settimana</h2>
+            <p>{d.esercizio}</p>
+          </section>
+
+          {d.fatto && (
+            <section class="dod">
+              <h2 class="label"><Icon name="check-circle" size={18} /> Il progetto è finito quando</h2>
+              <ul>{d.fatto.map((f) => <li>{f}</li>)}</ul>
+            </section>
+          )}
+        </div>
+
+        <aside class="side">
+          <div class="card side-card">
+            <h2 class="label">Risorse</h2>
+            <ul class="res">
+              {d.risorse.map((r) => (
+                <li><a href={r.url} target="_blank" rel="noopener">{r.titolo}<Icon name="link" size={14} /></a></li>
+              ))}
+            </ul>
+          </div>
+          <div class="card side-card">
+            <h2 class="label">Tempo previsto</h2>
+            <p class="time"><Icon name="clock" size={18} /> 5–8 ore in 3 sessioni</p>
+            <button class="btn btn-primary done-btn" type="button" data-week-toggle={d.numero} aria-pressed="false" data-label-todo="Segna come fatta" data-label-done="Fatta: annulla">
+              <Icon name="check" /><span data-label>Segna come fatta</span>
+            </button>
+          </div>
+        </aside>
+      </div>
+
+      <nav class="pager" aria-label="Lezioni vicine">
+        {prev ? (
+          <a class="card pg" href={url(`/fase-1/${weekSlug(prev.data.numero)}/`)}>
+            <span class="muted"><Icon name="arrow-left" size={16} /> Settimana {prev.data.numero}</span><strong>{prev.data.titolo}</strong>
+          </a>
+        ) : <span />}
+        {next ? (
+          <a class="card pg pg-next" href={url(`/fase-1/${weekSlug(next.data.numero)}/`)}>
+            <span class="muted">Settimana {next.data.numero} <Icon name="arrow-right" size={16} /></span><strong>{next.data.titolo}</strong>
+          </a>
+        ) : (
+          <a class="card pg pg-next" href={url('/percorso/#fase-2')}>
+            <span class="muted">Prossima fase <Icon name="arrow-right" size={16} /></span><strong>Fase 2: Trasformare i dati</strong>
+          </a>
+        )}
+      </nav>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .crumbs { display: flex; flex-wrap: wrap; gap: var(--space-sm); font-size: 0.88rem; color: var(--color-muted-foreground); margin-bottom: var(--space-lg); }
+  .crumbs a { color: var(--color-muted-foreground); }
+  .crumbs a:hover { color: var(--color-primary); }
+  .head { display: grid; gap: var(--space-sm); margin-bottom: var(--space-2xl); max-width: var(--measure); }
+  .weekbar { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; margin-top: var(--space-md); max-width: 420px; }
+  .seg { height: 6px; border-radius: 3px; background: var(--color-muted); }
+  .seg.is-done { background: var(--color-success); }
+  .seg.cur { background: var(--color-primary); }
+  .seg.cur.is-done { background: var(--color-success); outline: 2px solid var(--color-primary); outline-offset: 1px; }
+
+  .grid { display: grid; gap: var(--space-2xl); grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 960px) { .grid { grid-template-columns: minmax(0, 1fr) 300px; } .side { position: sticky; top: calc(var(--header-h) + 24px); align-self: start; } }
+  .main { display: grid; gap: var(--space-xl); min-width: 0; }
+  .label { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-muted-foreground); margin: 0 0 var(--space-sm); display: flex; align-items: center; gap: var(--space-sm); }
+  .goal { display: flex; gap: var(--space-md); padding: var(--space-lg); border-color: var(--color-primary); background: var(--color-primary-soft); }
+  .goal > :global(svg) { color: var(--color-primary); flex: none; margin-top: 2px; }
+  .goal p { font-size: 1.08rem; font-weight: 500; }
+  .study { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-sm); }
+  .study li { display: flex; gap: var(--space-sm); align-items: flex-start; }
+  .study :global(svg) { color: var(--color-primary); flex: none; margin-top: 3px; }
+  .exercise { padding: var(--space-lg); border-radius: var(--radius-lg); background: var(--color-accent-soft); border-left: 4px solid var(--color-accent-fill); max-width: var(--measure); }
+  .exercise .label { color: var(--color-accent); }
+  .exercise p { font-size: 1.05rem; }
+  .dod { padding: var(--space-lg); border-radius: var(--radius-lg); border: 1.5px dashed var(--color-success); max-width: var(--measure); }
+  .dod .label { color: var(--color-success); }
+  .dod ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.3rem; }
+
+  .side { display: grid; gap: var(--space-md); }
+  .side-card { padding: var(--space-lg); }
+  .res { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-xs); }
+  .res a { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; font-weight: 500; }
+  .time { display: flex; align-items: center; gap: var(--space-sm); color: var(--color-muted-foreground); margin-bottom: var(--space-md); }
+  .done-btn { width: 100%; }
+  .is-done .done-btn { background: var(--color-success); color: var(--color-surface); }
+
+  .pager { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-md); margin-top: var(--space-3xl); }
+  .pg { display: grid; gap: 4px; padding: var(--space-lg); text-decoration: none; color: inherit; transition: border-color 180ms var(--ease); }
+  .pg:hover { border-color: var(--color-primary); }
+  .pg .muted { display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; }
+  .pg-next { text-align: right; justify-items: end; }
+</style>

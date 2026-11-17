@@ -1,0 +1,43 @@
+---
+numero: 7
+titolo: SQL, parte 3
+sottotitolo: CTE, subquery, window function
+obiettivo: Fare analisi vere, come classifiche, variazioni nel tempo e totali progressivi.
+studio:
+  - "WITH (CTE) per spezzare le query lunghe in passaggi leggibili"
+  - "ROW_NUMBER, RANK, LAG e SUM() OVER"
+esercizio: "Su un dataset con date, calcola la variazione mese su mese e la classifica dei primi 3 elementi per ogni mese."
+risorse:
+  - { titolo: "Mode, window function", url: "https://mode.com/sql-tutorial/sql-window-functions/" }
+  - { titolo: "DuckDB, window function", url: "https://duckdb.org/docs/sql/functions/window_functions" }
+---
+
+## Teoria in breve
+
+Una **CTE** (`WITH nome AS (...)`) dà un nome a un risultato intermedio. Le query lunghe diventano una sequenza di passaggi che si leggono dall'alto in basso.
+
+Una **window function** calcola un valore guardando le righe vicine, senza ridurle a una sola come fa `GROUP BY`. È lo strumento che separa chi sa SQL da chi lo usa davvero.
+
+```sql
+WITH mensile AS (
+  SELECT date_trunc('month', data) AS mese,
+         SUM(importo)              AS totale
+  FROM 'vendite.csv'
+  GROUP BY 1
+)
+SELECT mese,
+       totale,
+       totale - LAG(totale) OVER (ORDER BY mese)  AS variazione,
+       SUM(totale) OVER (ORDER BY mese)           AS progressivo
+FROM mensile
+ORDER BY mese;
+```
+
+## Le quattro da ricordare
+
+| Funzione | A cosa serve |
+| --- | --- |
+| `ROW_NUMBER()` | numerare le righe, per esempio per tenere solo la più recente |
+| `RANK()` | classifiche con eventuali pari merito |
+| `LAG()` / `LEAD()` | confrontare con la riga precedente o successiva |
+| `SUM() OVER` | totali progressivi e medie mobili |

@@ -1,0 +1,33 @@
+---
+numero: 4
+titolo: Terminale Linux
+sottotitolo: Navigare, cercare, concatenare comandi
+obiettivo: Muoverti nel terminale con sicurezza, perché server e dati vivono lì.
+studio:
+  - "Comandi base: cd, ls, cat, head, tail, wc, grep, sort, uniq"
+  - "La pipe | per concatenare comandi"
+  - "I primi livelli di OverTheWire Bandit, un ottimo assaggio di sicurezza"
+esercizio: "Sul CSV della settimana scorsa rispondi solo da terminale: quante righe ha? Quali valori unici ci sono nella colonna X? Quali righe contengono una certa parola?"
+risorse:
+  - { titolo: "Linux Journey", url: "https://linuxjourney.com/" }
+  - { titolo: "OverTheWire Bandit", url: "https://overthewire.org/wargames/bandit/" }
+  - { titolo: "The Missing Semester (MIT)", url: "https://missing.csail.mit.edu/" }
+---
+
+## Teoria in breve
+
+Ogni comando fa una cosa sola, e la **pipe** `|` passa l'output di un comando come input al successivo. Così componi operazioni complesse da pezzi semplici.
+
+```bash
+wc -l dataset.csv                          # quante righe
+head -n 5 dataset.csv                      # prime 5 righe
+cut -d ';' -f 3 dataset.csv | sort | uniq -c | sort -rn | head
+#   colonna 3  →  ordina  →  conta i valori  →  i più frequenti
+grep -i "milano" dataset.csv | wc -l       # righe che contengono "milano"
+```
+
+## Su Windows
+
+Installa **WSL** (Windows Subsystem for Linux) con Ubuntu: hai un vero terminale Linux senza cambiare sistema. Su Mac il terminale è già compatibile.
+
+> Bandit è un gioco in cui ogni livello nasconde la password del successivo. Insegna il terminale e il modo di pensare di chi lavora in sicurezza.
