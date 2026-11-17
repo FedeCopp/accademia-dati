@@ -5,7 +5,12 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 /* Decrypt Text — from Motiq (https://motiq.dev/components/decrypt-text).
-   MIT licensed. Zero runtime dependencies. */
+   MIT licensed. Zero runtime dependencies.
+
+   Modifica locale (Accademia Dati): con un font proporzionale i glifi casuali hanno
+   larghezze diverse dalle lettere vere, la riga si allungava e andava a capo e la pagina
+   saltava. Ora a ogni avvio dell'animazione la larghezza di ogni carattere viene misurata
+   sul testo vero e bloccata (lockWidths); alla fine viene sbloccata (unlockWidths). */
 
 /* -------------------------------------------------------------------------- */
 /* Motiq design tokens                                                        */
@@ -232,13 +237,38 @@ function DecryptTextBase({
     timerRef.current = null;
   }, []);
 
+  /** Toglie la larghezza fissa: il testo risolto torna a scorrere con la sua crenatura. */
+  const unlockWidths = React.useCallback(() => {
+    for (const el of charRefs.current) {
+      if (!el) continue;
+      el.style.removeProperty("display");
+      el.style.removeProperty("width");
+      el.style.removeProperty("text-align");
+    }
+  }, []);
+
+  /**
+   * Misura ogni carattere mentre mostra la lettera vera e ne blocca la larghezza, così i
+   * glifi casuali non possono cambiare la lunghezza delle righe (niente salti della pagina).
+   * Prima tutte le letture, poi tutte le scritture: un solo calcolo di layout.
+   */
+  const lockWidths = React.useCallback((cells: HTMLSpanElement[]) => {
+    const widths = cells.map((el) => el.getBoundingClientRect().width);
+    cells.forEach((el, idx) => {
+      el.style.display = "inline-block";
+      el.style.width = `${widths[idx]}px`;
+      el.style.textAlign = "center";
+    });
+  }, []);
+
   const resolveAll = React.useCallback(() => {
     for (const el of charRefs.current) {
       if (!el) continue;
       el.textContent = el.dataset.mkChar ?? el.textContent;
       el.dataset.state = "plain";
     }
-  }, []);
+    unlockWidths();
+  }, [unlockWidths]);
 
   const play = React.useCallback(() => {
     const rng = makeRng(seed + runRef.current * 7919);
@@ -250,6 +280,11 @@ function DecryptTextBase({
 
     lastStartRef.current = performance.now();
     playedRef.current = true;
+
+    // Le celle mostrano ancora le lettere vere: si misurano adesso, prima di rimescolarle.
+    unlockWidths();
+    for (const el of cells) el.textContent = el.dataset.mkChar ?? el.textContent;
+    lockWidths(cells);
 
     const lockAt = new Float64Array(cells.length);
     const nextAt = new Float64Array(cells.length);
@@ -281,6 +316,7 @@ function DecryptTextBase({
       }
       if (remaining <= 0) {
         rafRef.current = null;
+        unlockWidths();
         onDecryptedRef.current?.();
         if (loop !== false && loop > 0) {
           timerRef.current = setTimeout(() => {
@@ -293,7 +329,7 @@ function DecryptTextBase({
       rafRef.current = requestAnimationFrame(frame);
     };
     rafRef.current = requestAnimationFrame(frame);
-  }, [jitter, loop, pool, seed, speed, stagger, startDelay, stop]);
+  }, [jitter, lockWidths, loop, pool, seed, speed, stagger, startDelay, stop, unlockWidths]);
 
   // Orchestration: reduced motion resolves and parks; otherwise the first run is
   // gated on the trigger and every run is parked while offscreen. Layout effect
@@ -313,6 +349,18 @@ function DecryptTextBase({
       return;
     }
     if (!playedRef.current) {
+      // Le larghezze si misurano sul font definitivo: se il web font sta ancora
+      // caricando, la prima animazione parte appena è pronto (modifica locale).
+      const fonts = typeof document !== "undefined" ? document.fonts : undefined;
+      if (fonts && fonts.status !== "loaded") {
+        let cancelled = false;
+        fonts.ready.then(() => {
+          if (!cancelled && !playedRef.current) play();
+        });
+        return () => {
+          cancelled = true;
+        };
+      }
       play();
       return;
     }
