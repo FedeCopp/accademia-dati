@@ -11,6 +11,91 @@ risorse:
   - { titolo: "Kaggle Learn, Pandas", url: "https://www.kaggle.com/learn/pandas" }
   - { titolo: "10 minutes to pandas", url: "https://pandas.pydata.org/docs/user_guide/10min.html" }
   - { titolo: "pandas, confronto con SQL", url: "https://pandas.pydata.org/docs/getting_started/comparison/comparison_with_sql.html" }
+esercizi:
+- id: s08-filtro
+  titolo: Solo i libri
+  consegna: Leggi `vendite.csv` con pandas. Salva in `libri` le sole righe della categoria "Libri" e in `n_libri` quante sono.
+  linguaggio: python
+  dataset:
+  - vendite.csv
+  iniziale: |
+    import pandas as pd
+
+    vendite = pd.read_csv("vendite.csv")
+    print(vendite.head())
+
+    libri = vendite
+    n_libri = 0
+  soluzione: |
+    import pandas as pd
+
+    vendite = pd.read_csv("vendite.csv")
+
+    libri = vendite[vendite["categoria"] == "Libri"]
+    n_libri = len(libri)
+    print(n_libri)
+  test:
+  - codice: |
+      import pandas as _pd
+      _v = _pd.read_csv('vendite.csv')
+      _l = _v[_v['categoria'] == 'Libri']
+      assert isinstance(libri, _pd.DataFrame), 'libri non è un DataFrame'
+      assert set(libri['categoria'].unique()) == {'Libri'}, f"in libri ci sono anche: {sorted(set(libri['categoria']) - {'Libri'})}"
+    messaggio: '`libri` deve contenere solo righe della categoria Libri'
+  - codice: assert len(libri) == len(_l), f'libri ha {len(libri)} righe, ne servono {len(_l)}'
+    messaggio: Mancano delle righe di Libri
+  - codice: assert n_libri == len(_l), f'n_libri vale {n_libri}'
+    messaggio: '`n_libri` deve essere il numero di righe di `libri`'
+  suggerimenti:
+  - Una condizione su una colonna, `vendite["categoria"] == "Libri"`, restituisce True o False per ogni riga.
+  - 'Mettila tra parentesi quadre per filtrare: `vendite[condizione]`. Poi `len(libri)`.'
+- id: s08-groupby
+  titolo: Incasso per regione
+  consegna: 'Aggiungi a `vendite` la colonna `incasso` (quantità per prezzo unitario). Poi crea `incasso_regione`: l''incasso totale per regione, ordinato dal più alto al più basso.'
+  linguaggio: python
+  dataset:
+  - vendite.csv
+  iniziale: |
+    import pandas as pd
+
+    vendite = pd.read_csv("vendite.csv")
+
+    # 1. colonna incasso
+    # 2. incasso_regione
+    incasso_regione = None
+    print(incasso_regione)
+  soluzione: |
+    import pandas as pd
+
+    vendite = pd.read_csv("vendite.csv")
+    vendite["incasso"] = vendite["quantita"] * vendite["prezzo_unitario"]
+
+    incasso_regione = (vendite.groupby("regione")["incasso"]
+                              .sum()
+                              .sort_values(ascending=False))
+    print(incasso_regione)
+  test:
+  - codice: |
+      import pandas as _pd
+      assert 'incasso' in vendite.columns, 'manca la colonna incasso in vendite'
+    messaggio: Manca la colonna `incasso` in `vendite`
+  - codice: |
+      _v = _pd.read_csv('vendite.csv')
+      _v['i'] = _v['quantita'] * _v['prezzo_unitario']
+      _ref = _v.groupby('regione')['i'].sum()
+      assert incasso_regione is not None, 'incasso_regione è ancora None'
+      _got = _pd.Series(incasso_regione.squeeze() if isinstance(incasso_regione, _pd.DataFrame) else incasso_regione)
+      assert set(_got.index) == set(_ref.index), f'regioni trovate: {sorted(_got.index)}'
+      for _k in _ref.index:
+          assert abs(float(_got[_k]) - float(_ref[_k])) < 1e-6, f'{_k}: {float(_got[_k]):.2f} invece di {float(_ref[_k]):.2f}'
+    messaggio: I totali per regione non sono giusti
+  - codice: |
+      _vals = [float(x) for x in _got.values]
+      assert _vals == sorted(_vals, reverse=True), 'le regioni non sono in ordine decrescente'
+    messaggio: Ordina dal più alto al più basso con `sort_values(ascending=False)`
+  suggerimenti:
+  - 'Una colonna nuova si crea così: `vendite["incasso"] = vendite["quantita"] * vendite["prezzo_unitario"]`.'
+  - '`groupby("regione")["incasso"].sum()` e poi `.sort_values(ascending=False)`.'
 ---
 
 

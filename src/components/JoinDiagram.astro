@@ -1,0 +1,45 @@
+---
+// Schema dei quattro tipi di JOIN: l'area colorata è ciò che finisce nel risultato.
+const tipi = [
+  { nome: 'INNER JOIN', sx: false, centro: true, dx: false, testo: 'Solo le righe con corrispondenza in entrambe le tabelle.' },
+  { nome: 'LEFT JOIN', sx: true, centro: true, dx: false, testo: 'Tutte le righe di sinistra; NULL dove a destra manca.' },
+  { nome: 'RIGHT JOIN', sx: false, centro: true, dx: true, testo: 'Tutte le righe di destra; NULL dove a sinistra manca.' },
+  { nome: 'FULL JOIN', sx: true, centro: true, dx: true, testo: 'Tutte le righe di entrambe, unite dove possibile.' },
+];
+---
+<figure class="joins" aria-label="I quattro tipi di JOIN">
+  <ul>
+    {tipi.map((t, i) => (
+      <li>
+        <svg viewBox="0 0 120 76" role="img" aria-label={`${t.nome}: ${t.testo}`}>
+          <defs>
+            <clipPath id={`jl-${i}`}><circle cx="46" cy="38" r="30" /></clipPath>
+          </defs>
+          {t.sx && <circle cx="46" cy="38" r="30" class="fill" />}
+          {t.dx && <circle cx="74" cy="38" r="30" class="fill" />}
+          {t.centro && <circle cx="74" cy="38" r="30" class="fill strong" clip-path={`url(#jl-${i})`} />}
+          <circle cx="46" cy="38" r="30" class="line" />
+          <circle cx="74" cy="38" r="30" class="line" />
+          <text x="28" y="42" class="lbl">A</text>
+          <text x="86" y="42" class="lbl">B</text>
+        </svg>
+        <p class="nome">{t.nome}</p>
+        <p class="testo">{t.testo}</p>
+      </li>
+    ))}
+  </ul>
+  <figcaption>A è la tabella dopo FROM, B quella dopo JOIN. L'area colorata è ciò che finisce nel risultato.</figcaption>
+</figure>
+<style>
+  .joins { margin: var(--space-md) 0; }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-md); grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  li { display: grid; gap: 4px; justify-items: center; text-align: center; padding: var(--space-md); border-radius: var(--radius-md); background: var(--color-surface); border: 1px solid var(--color-border); }
+  svg { width: 100%; max-width: 140px; height: auto; }
+  .fill { fill: var(--color-primary-soft); }
+  .fill.strong { fill: var(--color-primary); opacity: .85; }
+  .line { fill: none; stroke: var(--color-border-strong); stroke-width: 1.5; }
+  .lbl { font-family: var(--font-mono); font-size: 12px; fill: var(--color-foreground); }
+  .nome { font-family: var(--font-mono); font-weight: 600; font-size: 0.85rem; }
+  .testo { font-size: 0.85rem; color: var(--color-muted-foreground); line-height: 1.4; }
+  figcaption { margin-top: var(--space-sm); font-size: 0.85rem; color: var(--color-muted-foreground); }
+</style>

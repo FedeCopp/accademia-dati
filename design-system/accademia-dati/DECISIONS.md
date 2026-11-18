@@ -29,3 +29,10 @@ orizzontale da 375px in su.
 - I token `--motiq-*` puntano ai nostri (`--color-primary`, `--color-foreground`…); nel terminale sono ridefiniti sui colori del codice, che restano scuri in entrambi i temi.
 - **motion** sostituisce le animazioni fatte a mano: comparsa allo scroll con molla senza rimbalzo e stagger di 70 ms, barra di lettura con `scroll()`, anello dei progressi con `motion/react`.
 - Costo: la home passa da circa 10 KB a circa 140 KB di JavaScript compresso, per via di React e motion. Le altre pagine caricano React solo se contengono un'isola.
+
+## Esercizi nel browser (v4)
+
+- Ricerca della skill: nessuna skill o plugin del catalogo esegue codice nel browser; per l'interfaccia si usa ui-ux-pro-max (stati di caricamento visibili, code splitting, controlli con stato esplicito).
+- Pannello unico: consegna, editor scuro in entrambi i temi (coerente con i blocchi di codice), azioni, esito, risultato. Esito con icona e testo ("Superato" / "Non ancora"), non solo colore, annunciato con `aria-live`.
+- I motori si caricano al primo "Esegui", con un messaggio che dice quanto pesano. La soluzione si mostra dopo 2 tentativi, o con una conferma.
+- Gli avvisi interni delle librerie Python sono nascosti: chi impara vede solo i propri errori, spiegati in italiano.

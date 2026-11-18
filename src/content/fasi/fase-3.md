@@ -10,11 +10,6 @@ risorse:
   - { titolo: "Streamlit, documentazione", url: "https://docs.streamlit.io/" }
   - { titolo: "Metabase, Learn", url: "https://www.metabase.com/learn/" }
   - { titolo: "Kaggle Learn, Data Visualization", url: "https://www.kaggle.com/learn/data-visualization" }
-video:
-  - { titolo: "Dashboard interattiva in Power BI, passo passo", url: "https://www.youtube.com/watch?v=gus_ssPa8SM", autore: "Mirco Miglietta", nota: "il punto di partenza" }
-  - { titolo: "Analisi delle vendite con SQL e Power BI", url: "https://www.youtube.com/watch?v=su0S9X7ONk4", autore: "Mirco Miglietta" }
-  - { titolo: "Power BI: contesto di filtro e contesto di riga", url: "https://www.youtube.com/watch?v=WGasMjm0aKc", autore: "Mirco Miglietta" }
-  - { titolo: "Power BI: drill through per il dettaglio", url: "https://www.youtube.com/watch?v=ue5r5e0BqMg", autore: "Mirco Miglietta" }
 ---
 
 ## Argomenti, mese per mese
@@ -33,10 +28,27 @@ video:
 
 ## Power BI, l'alternativa più richiesta
 
-Negli annunci per data analyst in Italia lo strumento di dashboard più citato è **Power BI**. Se punti al lavoro in azienda, nei mesi 8 e 9 puoi costruire la dashboard del progetto in Power BI invece che in Streamlit:
+Negli annunci per data analyst in Italia lo strumento di dashboard più citato è **Power BI**. Se punti al lavoro in azienda, nei mesi 8 e 9 puoi costruire la dashboard del progetto in Power BI invece che in Streamlit. **Power BI Desktop** è gratuito, ma funziona solo su Windows: su Mac serve una macchina virtuale o il servizio web.
 
-- **Power BI Desktop** è gratuito, ma funziona solo su Windows. Su Mac serve una macchina virtuale o il servizio web.
-- Si collega direttamente al database della Fase 2.
-- Il concetto chiave da capire è la differenza tra **contesto di filtro** e **contesto di riga** nelle formule DAX.
+### Costruire una dashboard, passo passo
+
+1. **Importa i dati**: da "Recupera dati" collegati al database della Fase 2 o a un file.
+2. **Sistema il modello**: nella vista modello collega le tabelle con le chiavi, per esempio vendite e prodotti tramite il codice prodotto. È lo schema a stella della Fase 2.
+3. **Crea le misure** in DAX, il linguaggio delle formule di Power BI. Per esempio `Incasso = SUM(vendite[importo])`.
+4. **Disegna i visual**: trascina misure e colonne su grafici, tabelle e schede numeriche.
+5. **Aggiungi i filtri** (slicer) per anno, regione e categoria. Tutti i visual della pagina si aggiornano insieme.
+
+### Contesto di filtro e contesto di riga
+
+È il concetto che confonde di più all'inizio.
+
+- **Contesto di riga**: una formula calcolata **riga per riga**, come una colonna calcolata. `Importo = vendite[quantita] * vendite[prezzo]` guarda solo la riga in cui si trova.
+- **Contesto di filtro**: una **misura** viene calcolata sui dati rimasti dopo i filtri attivi, cioè slicer, righe della tabella e barre del grafico. La stessa misura `Incasso` dà un numero diverso in ogni barra perché ogni barra filtra una categoria diversa.
+
+Regola pratica: per calcoli su una singola riga usa una colonna calcolata; per totali, medie e percentuali che devono rispondere ai filtri usa una misura.
+
+### Drill through
+
+Il **drill through** permette di passare da un riepilogo al dettaglio. Crei una pagina "Dettaglio prodotto" e indichi il campo prodotto come filtro di drill through. Poi, da qualsiasi grafico, clic destro su un prodotto e "Drill through": si apre la pagina di dettaglio già filtrata su quel prodotto.
 
 Streamlit resta la scelta migliore se vuoi una dashboard pubblica e gratuita da mettere nel portfolio.

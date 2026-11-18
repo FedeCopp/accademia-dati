@@ -11,6 +11,103 @@ risorse:
   - { titolo: "CS50P", url: "https://cs50.harvard.edu/python/" }
   - { titolo: "dati.gov.it, catalogo open data", url: "https://www.dati.gov.it/view-dataset" }
   - { titolo: "Modulo csv, documentazione", url: "https://docs.python.org/3/library/csv.html" }
+esercizi:
+- id: s03-media
+  titolo: Una funzione per la media
+  consegna: 'Completa la funzione `media(numeri)`: deve restituire la media della lista. Se la lista è vuota deve restituire 0, senza errori.'
+  linguaggio: python
+  dataset: []
+  iniziale: |
+    def media(numeri):
+        # completa la funzione
+        pass
+
+    print(media([2, 4, 6]))
+  soluzione: |
+    def media(numeri):
+        if len(numeri) == 0:
+            return 0
+        return sum(numeri) / len(numeri)
+
+    print(media([2, 4, 6]))
+  test:
+  - codice: assert media([2, 4, 6]) == 4, f'media([2, 4, 6]) restituisce {media([2, 4, 6])!r}'
+    messaggio: La media di [2, 4, 6] deve essere 4
+  - codice: assert media([1.5]) == 1.5
+    messaggio: La media di un solo numero è il numero stesso
+  - codice: assert media([]) == 0
+    messaggio: Con una lista vuota la funzione deve restituire 0
+  suggerimenti:
+  - '`sum(numeri)` somma la lista, `len(numeri)` conta gli elementi.'
+  - 'Controlla prima se la lista è vuota: dividere per zero causa un errore.'
+- id: s03-converti
+  titolo: Numeri scritti all'italiana
+  consegna: Scrivi `converti(testo)` che trasforma un numero con la virgola decimale in `float` ("3,5" diventa 3.5). Se il testo non è un numero deve restituire `None` invece di andare in errore.
+  linguaggio: python
+  dataset: []
+  iniziale: |
+    def converti(testo):
+        return float(testo)
+
+    print(converti("3,5"))
+  soluzione: |
+    def converti(testo):
+        try:
+            return float(testo.replace(",", "."))
+        except ValueError:
+            return None
+
+    print(converti("3,5"))
+  test:
+  - codice: assert converti('3,5') == 3.5
+    messaggio: '"3,5" deve diventare 3.5'
+  - codice: assert converti('12') == 12.0
+    messaggio: '"12" deve diventare 12.0'
+  - codice: assert converti('abc') is None
+    messaggio: Un testo che non è un numero deve restituire None
+  suggerimenti:
+  - '`testo.replace(",", ".")` sostituisce la virgola con il punto.'
+  - Metti la conversione dentro `try:` e restituisci `None` nel blocco `except ValueError:`.
+- id: s03-csv
+  titolo: Leggere un CSV italiano
+  consegna: Il file `spese.csv` usa il punto e virgola come separatore e la virgola per i decimali. Leggilo con il modulo `csv` e calcola `n_righe` (quante spese ci sono) e `totale` (la somma degli importi).
+  linguaggio: python
+  dataset:
+  - spese.csv
+  iniziale: |
+    import csv
+
+    with open("spese.csv", encoding="utf-8") as f:
+        righe = list(csv.DictReader(f))  # attenzione al separatore!
+
+    n_righe = 0
+    totale = 0.0
+
+    print(n_righe, totale)
+  soluzione: |
+    import csv
+
+    with open("spese.csv", encoding="utf-8") as f:
+        righe = list(csv.DictReader(f, delimiter=";"))
+
+    n_righe = len(righe)
+    totale = sum(float(r["importo"].replace(",", ".")) for r in righe)
+
+    print(n_righe, totale)
+  test:
+  - codice: |
+      import csv as _c
+      with open('spese.csv', encoding='utf-8') as _f:
+          _r = list(_c.DictReader(_f, delimiter=';'))
+      assert n_righe == len(_r), f'n_righe vale {n_righe}, le spese sono {len(_r)}'
+    messaggio: 'Il numero di righe non è giusto: hai indicato il separatore `;`?'
+  - codice: |
+      _t = sum(float(r['importo'].replace(',', '.')) for r in _r)
+      assert abs(totale - _t) < 1e-9, f'totale vale {totale}, dovrebbe essere {_t:.2f}'
+    messaggio: 'Il totale non è giusto: hai convertito la virgola decimale?'
+  suggerimenti:
+  - '`csv.DictReader(f, delimiter=";")` legge un file separato da punto e virgola.'
+  - 'Ogni importo è un testo come "12,50": sostituisci la virgola prima di usare `float()`.'
 ---
 
 

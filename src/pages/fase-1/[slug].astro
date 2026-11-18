@@ -2,8 +2,8 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
-import VideoList from '../../components/VideoList.astro';
 import { url, pad, weekSlug } from '../../lib/url';
+import { CodeExercise } from '@/components/ui/code-exercise';
 
 export async function getStaticPaths() {
   const weeks = (await getCollection('settimane')).sort((a, b) => a.data.numero - b.data.numero);
@@ -17,11 +17,14 @@ const { week, prev, next } = Astro.props;
 const { Content } = await render(week);
 const d = week.data;
 const mese = Math.ceil(d.numero / 4);
+const esercizi = d.esercizi;
+const exIds = JSON.stringify(esercizi.map((e) => e.id));
 const steps = [
   { id: 'obiettivo', t: 'Obiettivo' },
   { id: 'studia', t: 'Cosa studiare' },
   { id: 'spiegazione', t: 'Spiegazione' },
-  { id: 'esercizio', t: 'Esercizio' },
+  ...(esercizi.length ? [{ id: 'esercitati', t: 'Esercitati qui' }] : []),
+  { id: 'esercizio', t: 'Esercizio della settimana' },
   { id: 'fatto', t: 'Segna come fatta' },
 ];
 ---
@@ -39,6 +42,9 @@ const steps = [
           <span><Icon name="clock" size={16} /> 5–8 ore · 3 sessioni</span>
           <span class="state-todo"><Icon name="circle" size={16} /> Da fare</span>
           <span class="state-done"><Icon name="check-circle" size={16} /> Completata</span>
+          {esercizi.length > 0 && (
+            <a class="ex-count" href="#esercitati"><Icon name="terminal" size={16} /> <span data-ex-progress data-ids={exIds}>0 / {esercizi.length}</span> esercizi superati</a>
+          )}
         </div>
         <div class="weekbar" aria-hidden="true" data-intro style="--i:3">
           {Array.from({ length: 12 }, (_, i) => <span class:list={['seg', { cur: i + 1 === d.numero }]} data-week-state={i + 1} />)}
@@ -63,7 +69,6 @@ const steps = [
         <section id="studia" class="step" data-step data-reveal>
           <h2 class="step-h"><span class="n">2</span>Cosa studiare</h2>
           <ul class="study">{d.studio.map((s) => <li><Icon name="book" size={18} /><span>{s}</span></li>)}</ul>
-          <VideoList video={d.video} />
           <div class="res">
             <p class="res-h">Risorse</p>
             <ul>
@@ -79,8 +84,18 @@ const steps = [
           <div class="prose"><Content /></div>
         </section>
 
+        {esercizi.length > 0 && (
+          <section id="esercitati" class="step" data-step>
+            <h2 class="step-h" data-reveal><span class="n">4</span>Esercitati qui</h2>
+            <p class="muted ex-intro" data-reveal>Scrivi il codice nell'editor, premi <b>Esegui</b> per vedere il risultato e <b>Verifica</b> per sapere se è corretto. Gira tutto nel tuo browser, con dati di esempio.</p>
+            <div class="ex-list">
+              {esercizi.map((e, i) => <CodeExercise client:visible ex={e} numero={i + 1} />)}
+            </div>
+          </section>
+        )}
+
         <section id="esercizio" class="step" data-step data-reveal>
-          <h2 class="step-h"><span class="n">4</span>Esercizio</h2>
+          <h2 class="step-h"><span class="n">{esercizi.length ? 5 : 4}</span>Esercizio della settimana</h2>
           <div class="exercise">
             <Icon name="pencil" size={20} />
             <p>{d.esercizio}</p>
@@ -94,7 +109,7 @@ const steps = [
         </section>
 
         <section id="fatto" class="step" data-step data-reveal>
-          <h2 class="step-h"><span class="n">5</span>Segna come fatta</h2>
+          <h2 class="step-h"><span class="n">{esercizi.length ? 6 : 5}</span>Segna come fatta</h2>
           <div class="done-box">
             <p class="muted">Hai fatto l'esercizio e scritto le tre righe nel diario? Segna la settimana: il progresso si aggiorna e la prossima lezione diventa quella evidenziata.</p>
             <button class="btn btn-primary btn-done" type="button" data-week-toggle={d.numero} aria-pressed="false" data-label-todo="Segna la settimana come fatta" data-label-done="Completata · annulla">
@@ -133,6 +148,10 @@ const steps = [
   .crumbs a:hover { color: var(--color-primary); }
   .meta { display: flex; flex-wrap: wrap; gap: var(--space-lg); color: var(--color-muted-foreground); font-size: 0.9rem; margin-top: var(--space-xs); }
   .meta span { display: inline-flex; align-items: center; gap: 6px; }
+  .ex-count { display: inline-flex; align-items: center; gap: 6px; color: var(--color-primary); font-weight: 600; text-decoration: none; }
+  .ex-count:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .ex-intro { max-width: var(--measure); }
+  .ex-list { display: grid; gap: var(--space-lg); min-width: 0; }
   .state-done { display: none !important; color: var(--color-success); font-weight: 600; }
   .is-done .state-todo { display: none !important; }
   .is-done .state-done { display: inline-flex !important; }

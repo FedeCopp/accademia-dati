@@ -8,10 +8,11 @@ import Base from '../layouts/Base.astro';
       <h1>Come funziona</h1>
       <h2>I tuoi progressi</h2>
       <p>Quando segni una settimana come fatta, l'informazione resta salvata nel browser che stai usando. Non ci sono account e nessun dato viene inviato altrove. Se cambi dispositivo o cancelli i dati del browser, i progressi ripartono da zero.</p>
+      <h2>Gli esercizi nel browser</h2>
+      <p>Nelle lezioni con l'editor puoi scrivere ed eseguire SQL e Python direttamente nella pagina. Il codice gira nel tuo browser: SQL con DuckDB, Python con Pyodide. Niente viene inviato a un server. La prima esecuzione scarica l'ambiente (circa 8 MB per SQL e 15 MB per Python); poi resta in cache.</p>
+      <p>Il pulsante <b>Verifica</b> controlla il risultato: per SQL lo confronta con quello della soluzione sugli stessi dati, per Python esegue dei controlli nascosti. I dati degli esercizi sono di esempio, con valori approssimati o inventati a scopo didattico.</p>
       <h2>Da dove vengono i contenuti</h2>
       <p>Ogni lezione è un file di testo nel repository del sito, nella cartella <code>src/content/settimane</code>. Le fasi sono in <code>src/content/fasi</code> e il glossario in <code>src/content/glossario.json</code>. Le risorse indicate sono gratuite salvo dove specificato.</p>
-      <h2>I video consigliati</h2>
-      <p>Alcune lezioni e fasi suggeriscono video in italiano, scelti argomento per argomento. Sono contenuti esterni pubblicati su YouTube dai rispettivi autori; il sito li collega soltanto. Per l'SQL e Power BI la fonte principale è il canale di Mirco Miglietta, che usa SQL Server: le differenze con DuckDB sono spiegate nella settimana 5.</p>
       <h2>Aggiungere una lezione</h2>
       <p>Copia un file esistente, cambia numero e contenuti, poi pubblica: il sito si aggiorna da solo in un paio di minuti. Il README del repository spiega i dettagli.</p>
     </div>

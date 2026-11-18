@@ -10,9 +10,75 @@ esercizio: "Pulisci un dataset volutamente disordinato e scrivi nel diario ogni 
 risorse:
   - { titolo: "Kaggle Learn, Data Cleaning", url: "https://www.kaggle.com/learn/data-cleaning" }
   - { titolo: "pandas, dati mancanti", url: "https://pandas.pydata.org/docs/user_guide/missing_data.html" }
-video:
-  - { titolo: "Lezione 11: data cleaning in SQL", url: "https://www.youtube.com/watch?v=yxGFmQmJ8U0", autore: "Mirco Miglietta", nota: "la stessa pulizia, fatta in SQL" }
-  - { titolo: "Lezione 9: date e CASE WHEN", url: "https://www.youtube.com/watch?v=Hv-2eJb1r2A", autore: "Mirco Miglietta" }
+esercizi:
+- id: s09-pulizia
+  titolo: Ripulire dati sporchi
+  consegna: '`grezzo.csv` ha nomi scritti male, importi con la virgola, date nel formato giorno/mese/anno, righe duplicate e importi mancanti. Crea `pulito`: comuni con spazi tolti e iniziale maiuscola, `importo` numerico, `data` come data, senza righe prive di importo e senza duplicati.'
+  linguaggio: python
+  dataset:
+  - grezzo.csv
+  iniziale: |
+    import pandas as pd
+
+    grezzo = pd.read_csv("grezzo.csv")
+    print(grezzo)
+
+    pulito = grezzo.copy()
+    # 1. comune: togli spazi e metti l'iniziale maiuscola
+    # 2. importo: da "1200,50" a 1200.5
+    # 3. data: da testo a data
+    # 4. togli righe senza importo e duplicati
+  soluzione: |
+    import pandas as pd
+
+    grezzo = pd.read_csv("grezzo.csv")
+
+    pulito = grezzo.copy()
+    pulito["comune"] = pulito["comune"].str.strip().str.title()
+    pulito["importo"] = pd.to_numeric(pulito["importo"].str.replace(",", "."))
+    pulito["data"] = pd.to_datetime(pulito["data"], dayfirst=True)
+    pulito = pulito.dropna(subset=["importo"]).drop_duplicates()
+    print(pulito)
+  test:
+  - codice: |
+      import pandas as _pd
+      assert set(pulito['comune']) == {'Bari', 'Lecce', 'Taranto', 'Matera'}, f"comuni trovati: {sorted(set(pulito['comune']))}"
+    messaggio: I nomi dei comuni non sono ancora puliti (spazi o maiuscole), oppure sono rimaste righe senza importo
+  - codice: assert _pd.api.types.is_numeric_dtype(pulito['importo']), f"importo è di tipo {pulito['importo'].dtype}"
+    messaggio: '`importo` deve essere numerico: sostituisci la virgola e converti'
+  - codice: |
+      assert _pd.api.types.is_datetime64_any_dtype(pulito['data']), f"data è di tipo {pulito['data'].dtype}"
+      assert (pulito['data'].dt.month == 2).sum() >= 1, 'controlla dayfirst=True: 03/02 è il 3 febbraio'
+    messaggio: '`data` deve essere una data, letta come giorno/mese/anno'
+  - codice: |
+      assert pulito['importo'].isna().sum() == 0, 'ci sono ancora importi mancanti'
+      assert len(pulito) == 6, f'pulito ha {len(pulito)} righe, ne servono 6'
+    messaggio: 'Restano righe senza importo o duplicati: pulisci i nomi prima di togliere i duplicati'
+  suggerimenti:
+  - '`.str.strip().str.title()` toglie gli spazi e mette l''iniziale maiuscola.'
+  - '`pd.to_numeric(col.str.replace(",", "."))` e `pd.to_datetime(col, dayfirst=True)`.'
+  - 'L''ordine conta: "  bari " e "Bari" diventano uguali solo dopo la pulizia, quindi `drop_duplicates()` va fatto alla fine.'
+- id: s09-case
+  titolo: Fasce di importo con CASE WHEN
+  consegna: 'Leggi `grezzo.csv` tutto come testo e mostra: `comune` in maiuscolo e senza spazi, `importo` come numero (DOUBLE) e `fascia`: ''mancante'' se l''importo manca, ''alto'' se supera 1000, altrimenti ''normale''.'
+  linguaggio: sql
+  dataset:
+  - grezzo.csv
+  iniziale: |
+    SELECT comune, importo
+    FROM read_csv('grezzo.csv', all_varchar = true);
+  soluzione: |
+    SELECT upper(trim(comune))                         AS comune,
+           CAST(replace(importo, ',', '.') AS DOUBLE)  AS importo,
+           CASE
+             WHEN importo IS NULL THEN 'mancante'
+             WHEN CAST(replace(importo, ',', '.') AS DOUBLE) > 1000 THEN 'alto'
+             ELSE 'normale'
+           END                                         AS fascia
+    FROM read_csv('grezzo.csv', all_varchar = true);
+  suggerimenti:
+  - '`upper(trim(comune))` pulisce il nome; `CAST(replace(importo, '','', ''.'') AS DOUBLE)` converte l''importo.'
+  - '`CASE WHEN condizione THEN valore ... ELSE valore END AS fascia`. Controlla prima il caso `IS NULL`.'
 ---
 
 
@@ -57,3 +123,16 @@ FROM read_csv('grezzo.csv', all_varchar = true);  -- tutto come testo: lo conver
 Con `all_varchar = true` DuckDB non prova a indovinare i tipi: sui dati sporchi è più sicuro leggere tutto come testo e convertire colonna per colonna.
 
 `CASE WHEN` è l'equivalente SQL di un `if`: serve per creare categorie, correggere valori e gestire i casi particolari.
+
+## Lavorare con le date
+
+Una data convertita nel tipo giusto si può confrontare, ordinare e scomporre:
+
+| Cosa vuoi | pandas | SQL (DuckDB) |
+| --- | --- | --- |
+| Testo → data | `pd.to_datetime(col, dayfirst=True)` | `strptime(col, '%d/%m/%Y')` |
+| Anno, mese | `col.dt.year`, `col.dt.month` | `year(col)`, `month(col)` |
+| Primo giorno del mese | `col.dt.to_period("M")` | `date_trunc('month', col)` |
+| Giorni tra due date | `(b - a).dt.days` | `date_diff('day', a, b)` |
+
+Attenzione al formato italiano: "03/02/2026" è il 3 febbraio. Senza `dayfirst=True` pandas lo legge come 2 marzo, all'americana.

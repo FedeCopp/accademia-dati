@@ -1,0 +1,64 @@
+data,prodotto,categoria,quantita,prezzo_unitario,regione
+2026-01-02,Zaino,Accessori,2,39.0,Lombardia
+2026-01-03,Cuffie,Elettronica,4,59.0,Lombardia
+2026-01-04,Atlante,Libri,2,24.5,Puglia
+2026-01-05,Tastiera,Elettronica,4,45.0,Lombardia
+2026-01-08,Manuale SQL,Libri,1,32.0,Emilia-Romagna
+2026-01-10,Atlante,Libri,4,24.5,Piemonte
+2026-01-14,Manuale SQL,Libri,4,32.0,Lombardia
+2026-01-17,Romanzo giallo,Libri,2,14.9,Lombardia
+2026-01-18,Manuale SQL,Libri,1,32.0,Emilia-Romagna
+2026-01-19,Manuale SQL,Libri,3,32.0,Emilia-Romagna
+2026-01-20,Romanzo giallo,Libri,2,14.9,Sicilia
+2026-01-25,Zaino,Accessori,3,39.0,Sicilia
+2026-01-27,Manuale SQL,Libri,1,32.0,Puglia
+2026-02-06,Zaino,Accessori,3,39.0,Piemonte
+2026-02-09,Manuale SQL,Libri,4,32.0,Lombardia
+2026-02-10,Borraccia,Accessori,1,12.5,Lombardia
+2026-02-10,Borraccia,Accessori,4,12.5,Puglia
+2026-02-11,Tastiera,Elettronica,3,45.0,Emilia-Romagna
+2026-02-12,Borraccia,Accessori,3,12.5,Piemonte
+2026-02-14,Borraccia,Accessori,1,12.5,Lombardia
+2026-02-15,Romanzo giallo,Libri,3,14.9,Piemonte
+2026-02-17,Mouse,Elettronica,4,19.9,Puglia
+2026-02-19,Borraccia,Accessori,4,12.5,Lombardia
+2026-02-23,Atlante,Libri,2,24.5,Lombardia
+2026-02-24,Romanzo giallo,Libri,3,14.9,Emilia-Romagna
+2026-03-01,Mouse,Elettronica,2,19.9,Sicilia
+2026-03-05,Atlante,Libri,2,24.5,Piemonte
+2026-03-05,Mouse,Elettronica,2,19.9,Sicilia
+2026-03-05,Mouse,Elettronica,4,19.9,Emilia-Romagna
+2026-03-08,Zaino,Accessori,2,39.0,Lombardia
+2026-03-15,Atlante,Libri,4,24.5,Emilia-Romagna
+2026-03-16,Manuale SQL,Libri,1,32.0,Piemonte
+2026-03-16,Romanzo giallo,Libri,2,14.9,Puglia
+2026-03-20,Tastiera,Elettronica,3,45.0,Piemonte
+2026-03-23,Mouse,Elettronica,4,19.9,Puglia
+2026-03-28,Zaino,Accessori,4,39.0,Lombardia
+2026-04-02,Zaino,Accessori,2,39.0,Lombardia
+2026-04-04,Manuale SQL,Libri,4,32.0,Sicilia
+2026-04-12,Manuale SQL,Libri,1,32.0,Lombardia
+2026-04-12,Mouse,Elettronica,3,19.9,Sicilia
+2026-04-13,Zaino,Accessori,1,39.0,Sicilia
+2026-04-15,Cuffie,Elettronica,2,59.0,Lombardia
+2026-04-15,Romanzo giallo,Libri,4,14.9,Sicilia
+2026-04-19,Romanzo giallo,Libri,2,14.9,Emilia-Romagna
+2026-04-20,Cuffie,Elettronica,4,59.0,Piemonte
+2026-04-20,Tastiera,Elettronica,1,45.0,Lombardia
+2026-05-04,Atlante,Libri,3,24.5,Puglia
+2026-05-07,Romanzo giallo,Libri,3,14.9,Piemonte
+2026-05-16,Borraccia,Accessori,3,12.5,Lombardia
+2026-05-17,Mouse,Elettronica,3,19.9,Piemonte
+2026-05-21,Tastiera,Elettronica,2,45.0,Emilia-Romagna
+2026-05-25,Romanzo giallo,Libri,3,14.9,Lombardia
+2026-05-25,Tastiera,Elettronica,2,45.0,Emilia-Romagna
+2026-05-26,Cuffie,Elettronica,2,59.0,Sicilia
+2026-05-27,Borraccia,Accessori,2,12.5,Emilia-Romagna
+2026-06-01,Romanzo giallo,Libri,3,14.9,Sicilia
+2026-06-07,Cuffie,Elettronica,4,59.0,Puglia
+2026-06-07,Mouse,Elettronica,3,19.9,Sicilia
+2026-06-07,Tastiera,Elettronica,4,45.0,Emilia-Romagna
+2026-06-08,Manuale SQL,Libri,4,32.0,Piemonte
+2026-06-12,Tastiera,Elettronica,1,45.0,Piemonte
+2026-06-13,Manuale SQL,Libri,2,32.0,Sicilia
+2026-06-16,Romanzo giallo,Libri,3,14.9,Lombardia

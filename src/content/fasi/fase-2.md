@@ -10,11 +10,6 @@ risorse:
   - { titolo: "dbt, corsi gratuiti", url: "https://learn.getdbt.com/catalog" }
   - { titolo: "Documentazione DuckDB", url: "https://duckdb.org/docs/" }
   - { titolo: "Kimball Group, tecniche di modellazione dimensionale", url: "https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/" }
-video:
-  - { titolo: "Processo di ETL: che cos'è?", url: "https://www.youtube.com/watch?v=VcC0Q2Oc_8Y", autore: "Mirco Miglietta" }
-  - { titolo: "SQL vs SSIS vs Python: 3 modi per creare un ETL", url: "https://www.youtube.com/watch?v=PUz5qr_EMTI", autore: "Mirco Miglietta" }
-  - { titolo: "Indici in SQL: come velocizzare le query", url: "https://www.youtube.com/watch?v=m1ucJnZYlC8", autore: "Mirco Miglietta", nota: "mese 5" }
-  - { titolo: "Corso SSIS completo (11 video)", url: "https://www.youtube.com/playlist?list=PLcbGJIjNIkhN9VEpg114x9QLzN98OySg4", autore: "Mirco Miglietta", nota: "facoltativo: l'ETL nello stack Microsoft" }
 ---
 
 ## Argomenti, mese per mese
@@ -24,6 +19,27 @@ video:
 **Mese 5: modellare.** Schema a stella: tabella dei fatti e tabelle delle dimensioni. dbt per scrivere le trasformazioni in SQL, con test (`not_null`, `unique`) e documentazione generata.
 
 **Mese 6: automatizzare.** Prefect (più semplice di Airflow per iniziare) per eseguire la pipeline ogni giorno, con log e notifica se qualcosa fallisce.
+
+## Che cos'è un processo ETL
+
+**ETL** sta per *Extract, Transform, Load*: estrarre, trasformare, caricare. È il percorso che porta i dati dalle fonti al database su cui si fanno le analisi.
+
+1. **Extract**: prendi i dati dove sono, per esempio un'API, file CSV in una cartella o il gestionale dell'azienda.
+2. **Transform**: li pulisci, uniformi formati e nomi, togli i duplicati, calcoli colonne nuove e colleghi tabelle diverse.
+3. **Load**: li salvi nel database di destinazione, in tabelle pronte per le dashboard.
+
+Oggi si usa spesso l'**ELT**: prima si caricano i dati grezzi nel database, poi si trasformano lì dentro con SQL (è il lavoro di dbt). Così i dati originali restano sempre disponibili.
+
+## Tre modi per costruire un ETL
+
+| | SQL (con dbt) | SSIS | Python (con Prefect) |
+| --- | --- | --- | --- |
+| Come si lavora | query SQL in file versionati | interfaccia grafica a blocchi | script e funzioni |
+| Dove si trova | aziende con data warehouse moderno | aziende con SQL Server | team di data engineering |
+| Punto forte | semplice, testabile, leggibile | integrato nello stack Microsoft | flessibile: API, file, qualsiasi fonte |
+| Punto debole | serve un database che faccia il lavoro | solo Windows e SQL Server | più codice da mantenere |
+
+In questa fase usi Python per estrarre e caricare e SQL con dbt per trasformare: è la combinazione più diffusa.
 
 ## Il progetto è finito quando
 

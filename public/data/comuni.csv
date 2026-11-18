@@ -1,0 +1,19 @@
+comune,regione,provincia,codice_istat,popolazione,superficie_km2
+Milano,Lombardia,MI,15146,1371000,181.8
+Bergamo,Lombardia,BG,16024,120000,40.2
+Brescia,Lombardia,BS,17029,198000,90.3
+Pavia,Lombardia,PV,18110,71000,63.2
+Torino,Piemonte,TO,1272,848000,130.0
+Novara,Piemonte,NO,3106,101000,103.0
+Asti,Piemonte,AT,5005,74000,151.3
+Bologna,Emilia-Romagna,BO,37006,392000,140.9
+Parma,Emilia-Romagna,PR,34027,198000,260.6
+Reggio nell'Emilia,Emilia-Romagna,RE,35033,171000,231.6
+Bari,Puglia,BA,72006,316000,117.4
+Foggia,Puglia,FG,71024,146000,509.3
+Lecce,Puglia,LE,75035,94000,241.0
+Altamura,Puglia,BA,72004,69000,431.4
+Taranto,Puglia,TA,73027,188000,249.9
+Palermo,Sicilia,PA,82053,630000,160.6
+Catania,Sicilia,CT,87015,298000,182.9
+Matera,Basilicata,MT,77014,60000,392.1

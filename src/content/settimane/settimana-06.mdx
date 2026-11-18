@@ -12,12 +12,67 @@ risorse:
   - { titolo: "SQLBolt", url: "https://sqlbolt.com/" }
   - { titolo: "Mode SQL Tutorial", url: "https://mode.com/sql-tutorial/" }
   - { titolo: "ISTAT, codici dei comuni", url: "https://www.istat.it/classificazione/codici-dei-comuni-delle-province-e-delle-regioni/" }
-video:
-  - { titolo: "Lezione 5: le JOIN, teoria", url: "https://www.youtube.com/watch?v=ot5kRp5yAug", autore: "Mirco Miglietta" }
-  - { titolo: "Lezione 6: i tipi di JOIN", url: "https://www.youtube.com/watch?v=lM70DQ39I1w", autore: "Mirco Miglietta" }
-  - { titolo: "Lezione 7: le funzioni di aggregazione", url: "https://www.youtube.com/watch?v=GXZqGu6wcHI", autore: "Mirco Miglietta" }
-  - { titolo: "Lezione 8: GROUP BY, HAVING e DISTINCT", url: "https://www.youtube.com/watch?v=uuMy5Ic1CFw", autore: "Mirco Miglietta" }
+esercizi:
+- id: s06-regioni
+  titolo: Comuni e abitanti per regione
+  consegna: Per ogni regione mostra `regione`, il numero di comuni (`comuni`) e la somma degli abitanti (`abitanti`). Ordina dalla regione con più abitanti.
+  linguaggio: sql
+  dataset:
+  - comuni.csv
+  ordinato: true
+  iniziale: |
+    SELECT regione
+    FROM 'comuni.csv';
+  soluzione: |
+    SELECT regione,
+           COUNT(*)         AS comuni,
+           SUM(popolazione) AS abitanti
+    FROM 'comuni.csv'
+    GROUP BY regione
+    ORDER BY abitanti DESC;
+  suggerimenti:
+  - '`COUNT(*)` conta le righe di ogni gruppo, `SUM(popolazione)` le somma.'
+  - Serve `GROUP BY regione`, poi `ORDER BY abitanti DESC`.
+- id: s06-having
+  titolo: Filtrare i gruppi con HAVING
+  consegna: Mostra `regione` e numero di comuni (`comuni`) solo per le regioni che nel file hanno **almeno 3 comuni**.
+  linguaggio: sql
+  dataset:
+  - comuni.csv
+  iniziale: |
+    SELECT regione, COUNT(*) AS comuni
+    FROM 'comuni.csv'
+    GROUP BY regione;
+  soluzione: |
+    SELECT regione, COUNT(*) AS comuni
+    FROM 'comuni.csv'
+    GROUP BY regione
+    HAVING COUNT(*) >= 3;
+  suggerimenti:
+  - '`WHERE` filtra le righe prima del raggruppamento; per filtrare i gruppi serve `HAVING`.'
+  - Aggiungi `HAVING COUNT(*) >= 3` dopo il `GROUP BY`.
+- id: s06-left-join
+  titolo: Nessun comune lasciato indietro
+  consegna: Per **ogni** comune mostra `comune` e `num_scuole`, prendendo le scuole da `scuole.csv` (collega i file con `codice_istat`). Se un comune non compare in `scuole.csv`, `num_scuole` deve valere 0.
+  linguaggio: sql
+  dataset:
+  - comuni.csv
+  - scuole.csv
+  iniziale: |
+    SELECT c.comune, s.num_scuole
+    FROM 'comuni.csv' AS c
+    JOIN 'scuole.csv' AS s ON s.codice_istat = c.codice_istat;
+  soluzione: |
+    SELECT c.comune,
+           COALESCE(s.num_scuole, 0) AS num_scuole
+    FROM 'comuni.csv' AS c
+    LEFT JOIN 'scuole.csv' AS s ON s.codice_istat = c.codice_istat;
+  suggerimenti:
+  - La `JOIN` normale tiene solo i comuni presenti in entrambi i file. Quale JOIN li tiene tutti?
+  - 'Con la `LEFT JOIN` i comuni senza scuole hanno `NULL`: `COALESCE(s.num_scuole, 0)` lo sostituisce con 0.'
 ---
+
+import JoinDiagram from '../../components/JoinDiagram.astro';
 
 
 `GROUP BY` raggruppa le righe con lo stesso valore e ti permette di calcolare un totale per gruppo. `WHERE` filtra **prima** di raggruppare, `HAVING` filtra **dopo**.
@@ -39,6 +94,24 @@ ORDER BY scuole DESC;
 
 Collega le tabelle con un **codice**, mai con un nome. "Reggio Emilia" e "Reggio nell'Emilia" sono lo stesso comune, ma il codice ISTAT è uno solo.
 
+
+## I quattro tipi di JOIN
+
+<JoinDiagram />
+
+Nel lavoro di tutti i giorni userai quasi sempre `JOIN` (interna) e `LEFT JOIN`. La domanda da farti è: **voglio tenere anche le righe che non trovano corrispondenza?** Se la risposta è sì, ti serve `LEFT JOIN`.
+
+## Le funzioni di aggregazione
+
+| Funzione | Cosa calcola | Nota |
+| --- | --- | --- |
+| `COUNT(*)` | numero di righe | conta anche le righe con valori mancanti |
+| `COUNT(colonna)` | righe con un valore | ignora i `NULL` |
+| `SUM(colonna)` | somma | |
+| `AVG(colonna)` | media | ignora i `NULL` |
+| `MIN` / `MAX` | valore più piccolo e più grande | funzionano anche su testi e date |
+
+Tutte ignorano i valori mancanti, tranne `COUNT(*)`. Per questo `AVG` può dare un risultato diverso da `SUM / COUNT(*)`.
 ## DISTINCT e il conteggio dei valori unici
 
 `DISTINCT` toglie le righe duplicate dal risultato. Dentro un conteggio, `COUNT(DISTINCT colonna)` conta quanti valori diversi ci sono.

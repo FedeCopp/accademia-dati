@@ -10,6 +10,88 @@ esercizio: "Script che, data una lista di spese (categoria, importo), stampa il 
 risorse:
   - { titolo: "CS50's Introduction to Python", url: "https://cs50.harvard.edu/python/" }
   - { titolo: "Tutorial ufficiale di Python", url: "https://docs.python.org/3/tutorial/" }
+esercizi:
+- id: s02-totale
+  titolo: Il totale delle spese
+  consegna: La lista `spese` contiene coppie (categoria, importo). Con un ciclo `for` somma tutti gli importi e salva il risultato nella variabile `totale`.
+  linguaggio: python
+  dataset: []
+  iniziale: |
+    spese = [("cibo", 12.5), ("trasporti", 3.0), ("cibo", 8.0), ("svago", 20.0), ("casa", 42.9)]
+
+    totale = 0
+    # scrivi qui il ciclo for
+
+    print(totale)
+  soluzione: |
+    spese = [("cibo", 12.5), ("trasporti", 3.0), ("cibo", 8.0), ("svago", 20.0), ("casa", 42.9)]
+
+    totale = 0
+    for categoria, importo in spese:
+        totale += importo
+
+    print(totale)
+  test:
+  - codice: assert 'totale' in globals(), 'Non trovo la variabile totale'
+    messaggio: Manca la variabile `totale`
+  - codice: assert abs(totale - 86.4) < 1e-9, f'totale vale {totale}, ma la somma degli importi è 86.4'
+    messaggio: Il totale non è corretto
+  suggerimenti:
+  - 'Ogni elemento della lista è una coppia: `for categoria, importo in spese:` la spacchetta in due variabili.'
+  - 'Dentro il ciclo aggiungi l''importo al totale: `totale += importo`.'
+- id: s02-per-categoria
+  titolo: Totale per categoria
+  consegna: Crea un dizionario `totali` che per ogni categoria contenga la somma dei suoi importi. Per esempio `totali["cibo"]` deve valere 20.5.
+  linguaggio: python
+  dataset: []
+  iniziale: |
+    spese = [("cibo", 12.5), ("trasporti", 3.0), ("cibo", 8.0), ("svago", 20.0), ("casa", 42.9)]
+
+    totali = {}
+    # per ogni spesa, aggiungi l'importo alla sua categoria
+
+    print(totali)
+  soluzione: |
+    spese = [("cibo", 12.5), ("trasporti", 3.0), ("cibo", 8.0), ("svago", 20.0), ("casa", 42.9)]
+
+    totali = {}
+    for categoria, importo in spese:
+        totali[categoria] = totali.get(categoria, 0) + importo
+
+    print(totali)
+  test:
+  - codice: assert isinstance(totali, dict) and len(totali) > 0, 'totali è vuoto o non è un dizionario'
+    messaggio: '`totali` deve essere un dizionario con le categorie'
+  - codice: 'assert set(totali) == {''cibo'',''trasporti'',''svago'',''casa''}, f''categorie trovate: {sorted(totali)}'''
+    messaggio: Le categorie non sono quelle giuste
+  - codice: assert abs(totali['cibo'] - 20.5) < 1e-9, f"totali['cibo'] vale {totali['cibo']}"
+    messaggio: 'Il totale del cibo dovrebbe essere 20.5: stai sommando o sovrascrivendo?'
+  suggerimenti:
+  - '`totali.get(categoria, 0)` restituisce il totale attuale, oppure 0 se la categoria non c''è ancora.'
+  - Se scrivi `totali[categoria] = importo` sovrascrivi il valore invece di sommarlo.
+- id: s02-max
+  titolo: La categoria più costosa
+  consegna: Dato il dizionario `totali`, salva in `piu_costosa` il nome della categoria con il totale più alto. Prova a farlo con `max()`.
+  linguaggio: python
+  dataset: []
+  iniziale: |
+    totali = {"cibo": 20.5, "trasporti": 3.0, "svago": 20.0, "casa": 42.9}
+
+    piu_costosa = None
+
+    print(piu_costosa)
+  soluzione: |
+    totali = {"cibo": 20.5, "trasporti": 3.0, "svago": 20.0, "casa": 42.9}
+
+    piu_costosa = max(totali, key=totali.get)
+
+    print(piu_costosa)
+  test:
+  - codice: assert piu_costosa == 'casa', f'piu_costosa vale {piu_costosa!r}'
+    messaggio: La categoria più costosa è un'altra
+  suggerimenti:
+  - '`max(totali)` confronta le chiavi in ordine alfabetico, non i valori.'
+  - Con `key=totali.get` dici a `max` di confrontare i valori del dizionario.
 ---
 
 

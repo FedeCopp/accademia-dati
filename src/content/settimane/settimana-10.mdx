@@ -11,6 +11,91 @@ risorse:
   - { titolo: "Kaggle Learn, Data Visualization", url: "https://www.kaggle.com/learn/data-visualization" }
   - { titolo: "From Data to Viz", url: "https://www.data-to-viz.com/" }
   - { titolo: "Matplotlib, galleria", url: "https://matplotlib.org/stable/gallery/index.html" }
+esercizi:
+- id: s10-barre
+  titolo: Barre per confrontare
+  consegna: Disegna un grafico a barre con l'incasso totale di ogni categoria. Dagli un titolo che dica la conclusione (almeno 4 parole, non solo "Incasso per categoria").
+  linguaggio: python
+  dataset:
+  - vendite.csv
+  iniziale: |
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    vendite = pd.read_csv("vendite.csv")
+    vendite["incasso"] = vendite["quantita"] * vendite["prezzo_unitario"]
+
+    per_categoria = vendite.groupby("categoria")["incasso"].sum().sort_values()
+    print(per_categoria)
+    # disegna qui il grafico
+  soluzione: |
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    vendite = pd.read_csv("vendite.csv")
+    vendite["incasso"] = vendite["quantita"] * vendite["prezzo_unitario"]
+
+    per_categoria = vendite.groupby("categoria")["incasso"].sum().sort_values()
+    ax = per_categoria.plot(kind="barh", color="#0f766e")
+    ax.set_title("L'elettronica porta più incasso dei libri")
+    ax.set_xlabel("Euro")
+    plt.tight_layout()
+  test:
+  - codice: |
+      import matplotlib.pyplot as _plt
+      assert _plt.get_fignums(), 'non hai creato nessun grafico'
+      _ax = _plt.gcf().axes[0]
+      assert len(_ax.patches) == 3, f'il grafico ha {len(_ax.patches)} barre, le categorie sono 3'
+    messaggio: Serve un grafico a barre con una barra per categoria
+  - codice: |
+      _t = _ax.get_title().strip()
+      assert len(_t.split()) >= 4, f'titolo: {_t!r}'
+    messaggio: Il titolo deve dire la conclusione, con almeno 4 parole
+  suggerimenti:
+  - 'Una Series di pandas si disegna con `per_categoria.plot(kind="barh")`: restituisce gli assi (`ax`).'
+  - 'Il titolo si imposta con `ax.set_title("...")`. Guarda i numeri: quale categoria incassa di più?'
+- id: s10-linea
+  titolo: Una linea per il tempo
+  consegna: Disegna l'incasso mese per mese con un grafico a linea (6 punti, da gennaio a giugno) e scrivi l'unità di misura sull'asse verticale.
+  linguaggio: python
+  dataset:
+  - vendite.csv
+  iniziale: |
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    vendite = pd.read_csv("vendite.csv", parse_dates=["data"])
+    vendite["incasso"] = vendite["quantita"] * vendite["prezzo_unitario"]
+    vendite["mese"] = vendite["data"].dt.month
+
+    # raggruppa per mese e disegna una linea
+  soluzione: |
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    vendite = pd.read_csv("vendite.csv", parse_dates=["data"])
+    vendite["incasso"] = vendite["quantita"] * vendite["prezzo_unitario"]
+    vendite["mese"] = vendite["data"].dt.month
+
+    mensile = vendite.groupby("mese")["incasso"].sum()
+    ax = mensile.plot(kind="line", marker="o", color="#0f766e")
+    ax.set_title("Gennaio è il mese con l'incasso più alto")
+    ax.set_ylabel("Euro")
+    ax.set_xlabel("Mese")
+    plt.tight_layout()
+  test:
+  - codice: |
+      import matplotlib.pyplot as _plt
+      assert _plt.get_fignums(), 'non hai creato nessun grafico'
+      _ax = _plt.gcf().axes[0]
+      assert len(_ax.get_lines()) >= 1, 'nel grafico non c\'è nessuna linea'
+      assert len(_ax.get_lines()[0].get_xdata()) == 6, f'la linea ha {len(_ax.get_lines()[0].get_xdata())} punti, i mesi sono 6'
+    messaggio: Serve una linea con un punto per ogni mese
+  - codice: assert _ax.get_ylabel().strip() != '', 'manca l\'etichetta dell\'asse verticale'
+    messaggio: Scrivi l'unità di misura sull'asse verticale con `ax.set_ylabel("Euro")`
+  suggerimenti:
+  - '`vendite.groupby("mese")["incasso"].sum()` dà un valore per mese.'
+  - '`.plot(kind="line", marker="o")` disegna la linea; poi `ax.set_ylabel("Euro")`.'
 ---
 
 

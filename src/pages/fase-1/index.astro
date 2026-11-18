@@ -46,6 +46,9 @@ const months = [
                     <span class="badge b-done"><Icon name="check" size={12} /> Fatta</span>
                     <strong>{w.data.titolo}</strong>
                     <span class="muted">{w.data.sottotitolo}</span>
+                    {w.data.esercizi.length > 0 && (
+                      <span class="exb" data-ex-wrap><span data-ex-progress data-ids={JSON.stringify(w.data.esercizi.map((e) => e.id))}>0 / {w.data.esercizi.length}</span> esercizi</span>
+                    )}
                   </span>
                   <Icon name="arrow-right" size={18} class="go" />
                 </a>
@@ -85,6 +88,8 @@ const months = [
   .txt { display: grid; gap: 2px; min-width: 0; flex: 1; }
   .txt strong { font-size: 1.02rem; }
   .txt .muted { font-size: 0.88rem; line-height: 1.4; }
+  .exb { justify-self: start; margin-top: 4px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-muted-foreground); padding: 0.1rem 0.5rem; border-radius: 999px; background: var(--color-muted); }
+  .exb:global(.ex-all) { background: var(--color-success-soft); color: var(--color-success); }
   .badge { display: none; justify-self: start; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; padding: 0.1rem 0.5rem; border-radius: 999px; margin-bottom: 2px; }
   .b-next { background: var(--color-accent-soft); color: var(--color-accent); }
   .b-done { background: var(--color-success-soft); color: var(--color-success); }

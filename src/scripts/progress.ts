@@ -122,4 +122,20 @@ document.addEventListener('click', (e) => {
   }
 });
 
-document.addEventListener('astro:page-load', render);
+function renderExercises() {
+  let passed: Set<string>;
+  try {
+    const raw = JSON.parse(localStorage.getItem('accademia-dati-exercises-v1') ?? '[]');
+    passed = new Set(Array.isArray(raw) ? raw : []);
+  } catch { passed = new Set(); }
+  document.querySelectorAll<HTMLElement>('[data-ex-progress]').forEach((el) => {
+    let ids: string[] = [];
+    try { ids = JSON.parse(el.dataset.ids ?? '[]'); } catch { /* attributo non valido */ }
+    const n = ids.filter((id) => passed.has(id)).length;
+    el.textContent = `${n} / ${ids.length}`;
+    el.closest('[data-ex-wrap]')?.classList.toggle('ex-all', ids.length > 0 && n === ids.length);
+  });
+}
+
+document.addEventListener('astro:page-load', () => { render(); renderExercises(); });
+window.addEventListener('exercise:change', renderExercises);

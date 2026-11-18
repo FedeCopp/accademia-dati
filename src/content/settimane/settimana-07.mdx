@@ -10,11 +10,85 @@ esercizio: "Su un dataset con date, calcola la variazione mese su mese e la clas
 risorse:
   - { titolo: "Mode, window function", url: "https://mode.com/sql-tutorial/sql-window-functions/" }
   - { titolo: "DuckDB, window function", url: "https://duckdb.org/docs/sql/functions/window_functions" }
-video:
-  - { titolo: "Lezione 10: subquery e CTE", url: "https://www.youtube.com/watch?v=dwWq0l3IoaU", autore: "Mirco Miglietta" }
-  - { titolo: "Le funzioni finestra in SQL", url: "https://www.youtube.com/watch?v=Nv9HgnY_dAw", autore: "Mirco Miglietta" }
-  - { titolo: "Come scrivere una query complessa in 5 passi", url: "https://www.youtube.com/watch?v=wxeCNNIY5zM", autore: "Mirco Miglietta" }
-  - { titolo: "Lezione 12: confrontare le righe della stessa tabella", url: "https://www.youtube.com/watch?v=1_CRerIeFZc", autore: "Mirco Miglietta" }
+esercizi:
+- id: s07-mensile
+  titolo: Incasso mese per mese
+  consegna: Ogni riga di `vendite.csv` è una vendita. Calcola l'incasso di ogni mese (quantità per prezzo unitario, sommato e arrotondato a 2 decimali). Colonne `mese` e `incasso`, in ordine cronologico.
+  linguaggio: sql
+  dataset:
+  - vendite.csv
+  ordinato: true
+  iniziale: |
+    SELECT data, quantita, prezzo_unitario
+    FROM 'vendite.csv'
+    LIMIT 10;
+  soluzione: |
+    SELECT date_trunc('month', data)                 AS mese,
+           ROUND(SUM(quantita * prezzo_unitario), 2) AS incasso
+    FROM 'vendite.csv'
+    GROUP BY 1
+    ORDER BY mese;
+  suggerimenti:
+  - '`date_trunc(''month'', data)` porta ogni data al primo giorno del suo mese.'
+  - Raggruppa per mese con `GROUP BY 1` e ordina con `ORDER BY mese`.
+- id: s07-lag
+  titolo: Variazione rispetto al mese prima
+  consegna: 'Partendo dalla CTE `mensile` già scritta, aggiungi la colonna `variazione`: incasso del mese meno incasso del mese precedente, arrotondato a 2 decimali. Il primo mese avrà `NULL`.'
+  linguaggio: sql
+  dataset:
+  - vendite.csv
+  ordinato: true
+  iniziale: |
+    WITH mensile AS (
+      SELECT date_trunc('month', data)               AS mese,
+             ROUND(SUM(quantita * prezzo_unitario), 2) AS incasso
+      FROM 'vendite.csv'
+      GROUP BY 1
+    )
+    SELECT mese, incasso
+    FROM mensile
+    ORDER BY mese;
+  soluzione: |
+    WITH mensile AS (
+      SELECT date_trunc('month', data)               AS mese,
+             ROUND(SUM(quantita * prezzo_unitario), 2) AS incasso
+      FROM 'vendite.csv'
+      GROUP BY 1
+    )
+    SELECT mese,
+           incasso,
+           ROUND(incasso - LAG(incasso) OVER (ORDER BY mese), 2) AS variazione
+    FROM mensile
+    ORDER BY mese;
+  suggerimenti:
+  - '`LAG(incasso) OVER (ORDER BY mese)` restituisce l''incasso della riga precedente.'
+  - 'Sottrai e arrotonda: `ROUND(incasso - LAG(...) OVER (...), 2) AS variazione`.'
+- id: s07-rank
+  titolo: Il prodotto più venduto di ogni categoria
+  consegna: Per ogni categoria trova il prodotto con più pezzi venduti in totale. Colonne `categoria`, `prodotto`, `pezzi`, una riga per categoria.
+  linguaggio: sql
+  dataset:
+  - vendite.csv
+  iniziale: |
+    SELECT categoria, prodotto, SUM(quantita) AS pezzi
+    FROM 'vendite.csv'
+    GROUP BY categoria, prodotto;
+  soluzione: |
+    WITH pezzi AS (
+      SELECT categoria, prodotto, SUM(quantita) AS pezzi
+      FROM 'vendite.csv'
+      GROUP BY categoria, prodotto
+    ),
+    classifica AS (
+      SELECT *, RANK() OVER (PARTITION BY categoria ORDER BY pezzi DESC) AS posizione
+      FROM pezzi
+    )
+    SELECT categoria, prodotto, pezzi
+    FROM classifica
+    WHERE posizione = 1;
+  suggerimenti:
+  - Metti la query di partenza in una CTE, poi aggiungi una classifica con `RANK() OVER (PARTITION BY categoria ORDER BY pezzi DESC)`.
+  - 'Una window function non si può filtrare nel `WHERE` della stessa query: filtra `posizione = 1` in una query esterna.'
 ---
 
 
@@ -46,6 +120,37 @@ ORDER BY mese;
 | `LAG()` / `LEAD()` | confrontare con la riga precedente o successiva |
 | `SUM() OVER` | totali progressivi e medie mobili |
 
+
+## Subquery o CTE?
+
+Una **subquery** è una query dentro un'altra query. Fa la stessa cosa di una CTE, ma si legge da dentro verso fuori:
+
+```sql
+-- Subquery: i comuni più popolosi della media
+SELECT comune, popolazione
+FROM 'comuni.csv'
+WHERE popolazione > (SELECT AVG(popolazione) FROM 'comuni.csv');
+
+-- La stessa cosa con una CTE: si legge dall'alto in basso
+WITH media AS (
+  SELECT AVG(popolazione) AS valore FROM 'comuni.csv'
+)
+SELECT comune, popolazione
+FROM 'comuni.csv', media
+WHERE popolazione > media.valore;
+```
+
+Usa le subquery per un singolo valore, come qui. Quando i passaggi diventano due o più, le CTE sono più facili da leggere e da correggere.
+
+## Come funziona una window function
+
+Prendi `SUM(incasso) OVER (PARTITION BY regione ORDER BY mese)` e leggila in tre pezzi:
+
+1. `PARTITION BY regione`: dividi le righe in gruppi, uno per regione, **senza** ridurle a una sola riga come farebbe `GROUP BY`.
+2. `ORDER BY mese`: dentro ogni gruppo, metti le righe in ordine di mese.
+3. `SUM(incasso)`: per ogni riga, somma l'incasso dalla prima riga del gruppo fino a quella attuale. Il risultato è un totale progressivo.
+
+Senza `PARTITION BY` il gruppo è l'intera tabella. Senza `ORDER BY`, la somma copre tutto il gruppo e ogni riga riceve lo stesso totale.
 ## Un metodo per le query complesse
 
 Davanti a una domanda difficile non scrivere tutto in una volta. Procedi per passi, una CTE per ciascuno, e controlla il risultato a ogni passo:
