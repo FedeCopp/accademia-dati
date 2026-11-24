@@ -34,6 +34,7 @@ Sito statico Astro 7 + MDX con isole React 19, Tailwind CSS v4 e TypeScript, pub
 - Contenuti in `laboratorio-sql/src/lezioni.js`; correzione in `src/engine.js` e `src/grade.js` (stessa logica di `src/lib/runners/grade.ts`).
 - Dopo ogni modifica: `npm run lab:build`, `npm run lab:verifica`, `npm run lab:verifica:browser`. Il build copia il file in `public/laboratorio-sql.html`: committa entrambi.
 - `new SQL.Database(bytes)` scrive nel buffer che riceve: passa sempre una copia (`new Uint8Array(bytes)`).
+- Motore principale WebAssembly (`sql-wasm-browser`), riserva asm.js (`sql-asm.js`) se WebAssembly è bloccato. L'avviso `.boot-help` compare via CSS dopo 6 s se JavaScript non parte (anteprime delle app).
 
 ## Design
 - Per qualsiasi lavoro sull'interfaccia usa la skill `ui-ux-pro-max` (`.claude/skills/ui-ux-pro-max/`).

@@ -18,6 +18,8 @@ const js = (await build({
   entryPoints: [join(here, 'src/app.js')],
   bundle: true, minify: true, format: 'iife', platform: 'browser', target: 'es2020',
   write: false, legalComments: 'none', logLevel: 'warning',
+  // sql-asm.js li richiede solo quando gira in Node: nel browser quel ramo non viene mai eseguito.
+  external: ['node:fs', 'node:crypto'],
 })).outputFiles[0].text;
 
 const wasm = readFileSync(require.resolve('sql.js/dist/sql-wasm-browser.wasm')).toString('base64');

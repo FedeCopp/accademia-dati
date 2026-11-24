@@ -3,6 +3,8 @@
  * Il motore (sql.js), il database Chinook e il codice sono incorporati nel file HTML.
  */
 import initSqlJs from 'sql.js/dist/sql-wasm-browser.js';
+// Riserva in JavaScript puro (asm.js): parte anche dove WebAssembly è bloccato, ma è più lenta.
+import initSqlJsAsm from 'sql.js/dist/sql-asm.js';
 import { EditorView, keymap, placeholder } from '@codemirror/view';
 import { EditorState, Prec } from '@codemirror/state';
 import { basicSetup } from 'codemirror';
@@ -194,6 +196,7 @@ function verdictView(esito) {
 
 /* --------------------------------------------------------------------- app */
 let SQL, DB_BYTES, sandboxDb;
+let motoreRiserva = false;
 const openDb = () => new SQL.Database(new Uint8Array(DB_BYTES)); // copia nuova: sql.js scrive nel buffer
 const TOTAL = MODULI.reduce((n, m) => n + m.esercizi.length, 0);
 const state = { view: 'lezione', m: 0, e: 0, attempts: {}, hints: {}, showSol: {}, confirmSol: {}, last: {} };
@@ -493,7 +496,14 @@ function render() {
 /* ------------------------------------------------------------------- avvio */
 (async function boot() {
   try {
-    SQL = await initSqlJs({ wasmBinary: b64ToBytes($('#wasm-b64').textContent) });
+    try {
+      SQL = await initSqlJs({ wasmBinary: b64ToBytes($('#wasm-b64').textContent) });
+    } catch (wasmErr) {
+      // Alcuni ambienti (criteri aziendali, anteprime protette) bloccano WebAssembly.
+      console.warn('WebAssembly non disponibile, uso il motore di riserva:', wasmErr?.message ?? wasmErr);
+      SQL = await initSqlJsAsm();
+      motoreRiserva = true;
+    }
     DB_BYTES = b64ToBytes($('#db-b64').textContent);
     $('#wasm-b64').remove(); $('#db-b64').remove();
     sandboxDb = openDb();
@@ -502,6 +512,7 @@ function render() {
     state.m = Math.min(Math.max(pos.m ?? 0, 0), MODULI.length - 1);
     state.e = Math.min(Math.max(pos.e ?? 0, 0), MODULI[state.m].esercizi.length - 1);
     render();
+    if (motoreRiserva) toast('Il browser blocca WebAssembly: uso un motore di riserva, un po\' più lento.');
   } catch (e) {
     $('#app').replaceChildren(h('div', { class: 'boot' }, h('p', { role: 'alert' }, `Non riesco ad avviare il database: ${e?.message ?? e}`), h('p', {}, 'Prova con una versione aggiornata di Chrome, Firefox, Edge o Safari.')));
   }

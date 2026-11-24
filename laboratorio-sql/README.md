@@ -4,6 +4,8 @@ Un corso pratico di SQL in **un solo file HTML**: lo apri con un doppio clic e f
 
 **File da aprire:** [`Laboratorio-SQL.html`](Laboratorio-SQL.html). Su GitHub: apri il file, poi "Download raw file". Online: https://fedecopp.github.io/accademia-dati/laboratorio-sql.html
 
+**Va aperto in un browser** (Chrome, Edge, Firefox, Safari): doppio clic sul file salvato, oppure trascinalo in una finestra del browser. Le anteprime dentro altre app (chat, posta, visualizzatori di file) non eseguono programmi: lì resta fermo su "Preparo il database" e dopo qualche secondo compare un avviso con queste istruzioni. Se il browser blocca WebAssembly, il laboratorio usa un motore di riserva in JavaScript puro (asm.js), un po' più lento.
+
 ## Cosa contiene
 
 13 moduli in ordine, dalle basi alle analisi: SELECT, WHERE, ORDER BY e DISTINCT, funzioni e CASE, aggregazioni, GROUP BY e HAVING, JOIN, subquery, CTE, window function, modifica dei dati e sfide finali. In tutto **34 esempi eseguibili** e **72 esercizi con correzione automatica**.
