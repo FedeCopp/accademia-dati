@@ -9,6 +9,7 @@ Un percorso di data intelligence da zero: circa 14 mesi, 5–8 ore a settimana, 
 - **Percorso** in 5 fasi: fondamenta, trasformare i dati, capire e comunicare, intelligence e scala, specializzazione.
 - **Fase 1** in 12 lezioni settimanali, ognuna con obiettivo, teoria in breve, esercizio e risorse gratuite.
 - **Esercizi nel browser** con editor, esecuzione e correzione automatica: SQL con DuckDB-WASM, Python con Pyodide (pandas e matplotlib inclusi). Tutto gira nel browser, senza server.
+- **Laboratorio SQL** (`laboratorio-sql/`): un corso SQL in un solo file HTML offline, con SQLite e il database Chinook, 72 esercizi corretti in automatico.
 - Progressi da spuntare, salvati nel browser.
 - Pagine dedicate ai progetti, al ponte verso la cybersecurity e al glossario, più una ricerca su tutto il sito.
 

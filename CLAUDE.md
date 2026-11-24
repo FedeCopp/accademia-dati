@@ -29,6 +29,12 @@ Sito statico Astro 7 + MDX con isole React 19, Tailwind CSS v4 e TypeScript, pub
 - Stato nel browser: `accademia-dati-exercises-v1` (superati) e `accademia-dati-draft-<id>` (bozze), helper in `src/lib/exercises.ts`.
 - Niente link a video: le spiegazioni sono scritte nelle lezioni.
 
+## Laboratorio SQL (cartella `laboratorio-sql/`)
+- App separata dal sito: un solo file HTML offline (`Laboratorio-SQL.html`) con sql.js 1.15.2 + database Chinook + CodeMirror, tutto in base64. Font di sistema, niente risorse esterne.
+- Contenuti in `laboratorio-sql/src/lezioni.js`; correzione in `src/engine.js` e `src/grade.js` (stessa logica di `src/lib/runners/grade.ts`).
+- Dopo ogni modifica: `npm run lab:build`, `npm run lab:verifica`, `npm run lab:verifica:browser`. Il build copia il file in `public/laboratorio-sql.html`: committa entrambi.
+- `new SQL.Database(bytes)` scrive nel buffer che riceve: passa sempre una copia (`new Uint8Array(bytes)`).
+
 ## Design
 - Per qualsiasi lavoro sull'interfaccia usa la skill `ui-ux-pro-max` (`.claude/skills/ui-ux-pro-max/`).
 - Leggi prima `design-system/accademia-dati/DECISIONS.md` e poi `MASTER.md`; DECISIONS ha la precedenza.
